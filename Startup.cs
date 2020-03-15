@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using product_and_receipt.Models;
+using System.Threading;
 
 namespace product_and_receipt
 {
@@ -13,6 +14,8 @@ namespace product_and_receipt
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            new Thread(() => { GlobalInstance.InitializeInNewThread(); }).Start();
         }
 
         public IConfiguration Configuration { get; }
