@@ -1,22 +1,52 @@
-import React from 'react'
+import React, { useState } from 'react'
 import MaterialTable from 'material-table'
 
 import * as Methods from '../Methods'
 
 export function CompanyTable() {
 
+    let diseditableObj = {
+        use: false,
+        editFuncs: {}
+    };
+    let editableObj = {
+        use: true,
+        editFuncs: {
+            onRowAdd: newData =>
+                new Promise((resolve, reject) => {
+                    Methods.cusFetch('CompanyInfo', 'post', newData, resolve, reject);
+                }),
+            onRowUpdate: (newData, oldData) =>
+                new Promise((resolve, reject) => {
+                    Methods.cusFetch('CompanyInfo', 'patch', newData, resolve, reject);
+                }),
+            onRowDelete: oldData =>
+                new Promise((resolve, reject) => {
+                    Methods.cusFetch('CompanyInfo', 'delete', oldData.uid, resolve, reject);
+                })
+        }
+    };
+
+    const [editInfo, setEditInfo] = useState(diseditableObj);
+
+    function changeEditable() {
+
+        setEditInfo((editInfo.use) ? diseditableObj : editableObj);
+    }
 
     return (
         <div style={{ maxWidth: '100%' }}>
+            <button onClick={changeEditable}>切換修改</button>
             <MaterialTable
-                title="公司"
+                title="公司資料"
                 options={{
                     search: true,
                     addRowPosition: 'first',
                     rowStyle: rowData => ({
-                        backgroundColor: (rowData.tableData.id % 2 == 0) ? '#EEE' : '#FFF'
+                        backgroundColor: (rowData.tableData.id % 2 === 0) ? '#EEE' : '#FFF'
                     }),
-                    //tableLayout: 'fixed'
+                    pageSize: 10
+                    //tableLayout: 'fixed',
                 }}
 
                 columns={[
@@ -46,20 +76,7 @@ export function CompanyTable() {
                             });
                     })
                 }
-                editable={{
-                    onRowAdd: newData =>
-                        new Promise((resolve, reject) => {
-                            Methods.cusFetch('post', newData, resolve, reject);
-                        }),
-                    onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve, reject) => {
-                            Methods.cusFetch('patch', newData, resolve, reject);
-                        }),
-                    onRowDelete: oldData =>
-                        new Promise((resolve, reject) => {
-                            Methods.cusFetch('delete', oldData.uid, resolve, reject);
-                        })
-                }}
+                editable={editInfo.editFuncs}
 
                 localization={Methods.LocalizationObj}
             />

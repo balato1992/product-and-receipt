@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using product_and_receipt.Models;
 using product_and_receipt.Models.DBs.structures;
+using System.Collections.Generic;
 
 namespace product_and_receipt.Controllers
 {
-    /*     
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public string Telephone { get; set; }
-        public string Fax { get; set; }
-         */
     [ApiController]
     [Route("[controller]")]
     public class CompanyInfoController : ControllerBase
@@ -27,11 +18,11 @@ namespace product_and_receipt.Controllers
         }
 
         [HttpGet]
-        public CompanyInfoGetPack Get(int pageSize, int pageIndex, string searchText)
+        public TableInfoGetPack Get(int pageSize, int pageIndex, string searchText)
         {
-            var companies = GlobalInstance.DB.CompanyTable.Get2(pageSize, ref pageIndex, searchText, out int totalCount);
+            var companies = GlobalInstance.DB.CompanyTable.GetForApi(pageSize, ref pageIndex, searchText, out int totalCount);
 
-            return new CompanyInfoGetPack(companies, pageIndex, totalCount);
+            return new TableInfoGetPack(companies, pageIndex, totalCount);
         }
 
         [HttpPost]
@@ -59,13 +50,13 @@ namespace product_and_receipt.Controllers
         }
     }
 
-    public class CompanyInfoGetPack
+    public class TableInfoGetPack
     {
-        public List<CompanyDatumWithUid> Data { get; set; }
+        public object Data { get; set; }
         public int Page { get; set; }
         public int Total { get; set; }
 
-        public CompanyInfoGetPack(List<CompanyDatumWithUid> data, int page, int total)
+        public TableInfoGetPack(object data, int page, int total)
         {
             Data = data;
             Page = page;

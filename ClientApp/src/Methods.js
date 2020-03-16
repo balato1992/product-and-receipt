@@ -1,7 +1,7 @@
 
-export function cusFetch(method, data, resolve, reject) {
+export function cusFetch(url,method, data, resolve, reject) {
 
-    fetch('CompanyInfo', {
+    fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(JSON.stringify(data))

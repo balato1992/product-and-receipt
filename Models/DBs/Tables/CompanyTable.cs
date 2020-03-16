@@ -38,7 +38,7 @@ namespace product_and_receipt.Models.DBs.Tables
 
             return list;
         }
-        public List<CompanyDatumWithUid> Get2(int pageSize, ref int pageIndex, string searchText, out int totalCount)
+        public List<CompanyDatumWithUid> GetForApi(int pageSize, ref int pageIndex, string searchText, out int totalCount)
         {
             if (pageSize < 5)
             {
