@@ -17,19 +17,21 @@ namespace product_and_receipt.Controllers
          */
     [ApiController]
     [Route("[controller]")]
-    public class CompanyController : ControllerBase
+    public class CompanyInfoController : ControllerBase
     {
-        private readonly ILogger<CompanyController> _logger;
+        private readonly ILogger<CompanyInfoController> _logger;
 
-        public CompanyController(ILogger<CompanyController> logger)
+        public CompanyInfoController(ILogger<CompanyInfoController> logger)
         {
             _logger = logger;
         }
 
         [HttpGet]
-        public IEnumerable<CompanyDatumWithUid> Get()
+        public CompanyInfoGetPack Get(int pageSize, int pageIndex, string searchText)
         {
-            return GlobalInstance.DB.CompanyTable.Get();
+            var companies = GlobalInstance.DB.CompanyTable.Get2(pageSize, ref pageIndex, searchText, out int totalCount);
+
+            return new CompanyInfoGetPack(companies, pageIndex, totalCount);
         }
 
         [HttpPost]
@@ -46,6 +48,28 @@ namespace product_and_receipt.Controllers
             CompanyDatumWithUid datum = Newtonsoft.Json.JsonConvert.DeserializeObject<CompanyDatumWithUid>(value);
 
             GlobalInstance.DB.CompanyTable.Update(datum);
+        }
+
+        [HttpDelete]
+        public void Delete([FromBody]string value)
+        {
+            int uid = Newtonsoft.Json.JsonConvert.DeserializeObject<int>(value);
+
+            GlobalInstance.DB.CompanyTable.Delete(uid);
+        }
+    }
+
+    public class CompanyInfoGetPack
+    {
+        public List<CompanyDatumWithUid> Data { get; set; }
+        public int Page { get; set; }
+        public int Total { get; set; }
+
+        public CompanyInfoGetPack(List<CompanyDatumWithUid> data, int page, int total)
+        {
+            Data = data;
+            Page = page;
+            Total = total;
         }
     }
 }
