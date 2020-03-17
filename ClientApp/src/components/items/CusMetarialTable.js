@@ -1,7 +1,7 @@
 import React from 'react'
 import MaterialTable from 'material-table'
 
-import * as Methods from '../Methods'
+import * as Methods from '../../Methods'
 
 export function CusMetarialTable(props) {
     let title = props.title;
