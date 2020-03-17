@@ -8,14 +8,17 @@ namespace product_and_receipt.Models.DBs
     {
         private CompanyTable _CompanyTable { get; set; }
         private ProductTable _ProductTable { get; set; }
+        private RecordTable _RecordTable { get; set; }
 
         public CompanyTable CompanyTable => _CompanyTable;
         public ProductTable ProductTable => _ProductTable;
+        public RecordTable RecordTable => _RecordTable;
 
         public DBHelper(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
         {
             _CompanyTable = new CompanyTable(dsn, id, password, log);
             _ProductTable = new ProductTable(dsn, id, password, log);
+            _RecordTable = new RecordTable(dsn, id, password, log);
         }
 
 

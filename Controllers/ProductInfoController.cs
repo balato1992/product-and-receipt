@@ -30,6 +30,7 @@ namespace product_and_receipt.Controllers
         {
             ProductDatum datum = Newtonsoft.Json.JsonConvert.DeserializeObject<ProductDatum>(value);
 
+            GlobalInstance.DB.RecordTable.Insert("Product Insert",datum);
             GlobalInstance.DB.ProductTable.Insert(datum);
         }
 
@@ -38,6 +39,7 @@ namespace product_and_receipt.Controllers
         {
             ProductDatumWithUid datum = Newtonsoft.Json.JsonConvert.DeserializeObject<ProductDatumWithUid>(value);
 
+            GlobalInstance.DB.RecordTable.Insert("Product Update", datum);
             GlobalInstance.DB.ProductTable.Update(datum);
         }
 
@@ -46,6 +48,7 @@ namespace product_and_receipt.Controllers
         {
             int uid = Newtonsoft.Json.JsonConvert.DeserializeObject<int>(value);
 
+            GlobalInstance.DB.RecordTable.Insert("Product Delete", uid);
             GlobalInstance.DB.ProductTable.Delete(uid);
         }
     }

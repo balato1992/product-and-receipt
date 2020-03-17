@@ -44,8 +44,11 @@ export function ProductTable() {
                     search: true,
                     addRowPosition: 'first',
                     rowStyle: rowData => ({
-                        backgroundColor: (rowData.tableData.id % 2 === 0) ? '#EEE' : '#FFF'
+                        backgroundColor: (rowData.tableData.id % 2 === 1) ? '#EEE' : '#FFF'
                     }),
+                    headerStyle: {
+                        backgroundColor: '#bbdefb'
+                    },
                     pageSize: 10
                     //tableLayout: 'fixed',
                 }}
