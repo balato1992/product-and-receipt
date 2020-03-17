@@ -1,6 +1,6 @@
 ﻿namespace product_and_receipt.Models.DBs.structures
 {
-    public class ProductDatum
+    public class MaterialDatum
     {
         public string Name { get; set; }
         public string Spec1 { get; set; }
@@ -11,7 +11,7 @@
 
         public int CompanyUid { get; set; }
 
-        public ProductDatum(string name, string spec1, string spec2, string type, string unit, decimal price, int companyUid)
+        public MaterialDatum(string name, string spec1, string spec2, string type, string unit, decimal price, int companyUid)
         {
             Name = name;
             Spec1 = spec1;

@@ -6,10 +6,10 @@ import Switch from '@material-ui/core/Switch';
 import { CusMetarialTable } from './CusMetarialTable';
 import * as Methods from '../Methods'
 
-export function ProductPage() {
+export function MaterialPage() {
     const [showEdit, setShowEdit] = useState(false);
     const [lookupData, setLookupData] = useState({});
-
+    const baseUrl = "MaterialInfo";
 
     const columns = [
         {
@@ -19,7 +19,8 @@ export function ProductPage() {
             },
             headerStyle: {
                 'textAlign': 'left'
-            }},
+            }
+        },
         { title: '名稱', field: 'name', initialEditValue: '-', emptyValue: '' },
         { title: '規格1', field: 'spec1', initialEditValue: '-', emptyValue: '' },
         { title: '規格2', field: 'spec2', initialEditValue: '-', emptyValue: '' },
@@ -37,7 +38,7 @@ export function ProductPage() {
     ];
     const getTableData = (query, resolve, reject) => {
 
-        fetch('CompanyInfo?pageSize=999999&pageIndex=0&searchText=')
+        fetch('companyInfo?pageSize=999999&pageIndex=0&searchText=')
             .then(response => response.json())
             .then(result => {
 
@@ -47,7 +48,7 @@ export function ProductPage() {
                 }
                 setLookupData(obj);
 
-                let url = 'ProductInfo?pageSize=' + query.pageSize + '&pageIndex=' + query.page + '&searchText=' + query.search;
+                let url = baseUrl + '?pageSize=' + query.pageSize + '&pageIndex=' + query.page + '&searchText=' + query.search;
                 fetch(url)
                     .then(response => response.json())
                     .then(result => {
@@ -63,15 +64,15 @@ export function ProductPage() {
     const editable = {
         onRowAdd: newData =>
             new Promise((resolve, reject) => {
-                Methods.cusFetch('ProductInfo', 'post', newData, resolve, reject);
+                Methods.cusFetch(baseUrl, 'post', newData, resolve, reject);
             }),
         onRowUpdate: (newData, oldData) =>
             new Promise((resolve, reject) => {
-                Methods.cusFetch('ProductInfo', 'patch', newData, resolve, reject);
+                Methods.cusFetch(baseUrl, 'patch', newData, resolve, reject);
             }),
         onRowDelete: oldData =>
             new Promise((resolve, reject) => {
-                Methods.cusFetch('ProductInfo', 'delete', oldData.uid, resolve, reject);
+                Methods.cusFetch(baseUrl, 'delete', oldData.uid, resolve, reject);
             })
     };
 

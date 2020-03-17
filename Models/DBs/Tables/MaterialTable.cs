@@ -4,7 +4,7 @@ using System.Data.Odbc;
 
 namespace product_and_receipt.Models.DBs.Tables
 {
-    public class ProductTable : OdbcHelper
+    public class MaterialTable : OdbcHelper
     {
         private static string TABLE => "PRODUCT_INFO";
         private static string FIELD_UID => "UID";
@@ -25,25 +25,25 @@ namespace product_and_receipt.Models.DBs.Tables
             FIELD_PRICE
         };
 
-        public ProductTable(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
+        public MaterialTable(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
         {
         }
 
-        public List<ProductDatumWithUid> Get()
+        public List<MaterialDatumWithUid> Get()
         {
-            var list = new List<ProductDatumWithUid>();
+            var list = new List<MaterialDatumWithUid>();
             DoReadAll($"SELECT * FROM {TABLE}", null,
                 (OdbcDataReader reader) =>
                 {
-                    ProductDatumWithUid item = ConvertTo(reader);
+                    MaterialDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
                 });
 
             return list;
         }
-        public List<ProductDatumWithUid> Get(int companyUid)
+        public List<MaterialDatumWithUid> Get(int companyUid)
         {
-            var list = new List<ProductDatumWithUid>();
+            var list = new List<MaterialDatumWithUid>();
             DoReadAll($"SELECT * FROM {TABLE} WHERE {FIELD_COMPANY_UID}=?",
                 (OdbcCommand cmd) =>
                 {
@@ -51,13 +51,13 @@ namespace product_and_receipt.Models.DBs.Tables
                 },
                 (OdbcDataReader reader) =>
                 {
-                    ProductDatumWithUid item = ConvertTo(reader);
+                    MaterialDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
                 });
 
             return list;
         }
-        public List<ProductDatumWithUid> GetForApi(int pageSize, ref int pageIndex, string searchText, out int totalCount)
+        public List<MaterialDatumWithUid> GetForApi(int pageSize, ref int pageIndex, string searchText, out int totalCount)
         {
             if (pageSize < 5)
             {
@@ -81,7 +81,7 @@ namespace product_and_receipt.Models.DBs.Tables
                 + $" ORDER BY {FIELD_NAME} OFFSET {rowsOffset} ROWS "
                 + $" FETCH NEXT {pageSize} ROWS ONLY ";
 
-            var list = new List<ProductDatumWithUid>();
+            var list = new List<MaterialDatumWithUid>();
             DoReadAll(sql,
                 (OdbcCommand cmd) =>
                 {
@@ -89,14 +89,14 @@ namespace product_and_receipt.Models.DBs.Tables
                 },
                 (OdbcDataReader reader) =>
                 {
-                    ProductDatumWithUid item = ConvertTo(reader);
+                    MaterialDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
                 });
 
             return list;
         }
 
-        public ProductDatumWithUid ConvertTo(OdbcDataReader reader, string prefix = null)
+        public MaterialDatumWithUid ConvertTo(OdbcDataReader reader, string prefix = null)
         {
             ConvertToInt(reader[prefix + FIELD_UID], out int uid);
             ConvertToString(reader[prefix + FIELD_NAME], out string name);
@@ -107,10 +107,10 @@ namespace product_and_receipt.Models.DBs.Tables
             ConvertToDecimal(reader[prefix + FIELD_PRICE], out decimal price);
             ConvertToInt(reader[prefix + FIELD_COMPANY_UID], out int companyUid);
 
-            return new ProductDatumWithUid(uid, name, spec1, spec2, type, unit, price, companyUid);
+            return new MaterialDatumWithUid(uid, name, spec1, spec2, type, unit, price, companyUid);
         }
 
-        public void Insert(ProductDatum datum)
+        public void Insert(MaterialDatum datum)
         {
             DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_NAME}, {FIELD_SPEC1}, {FIELD_SPEC2}, {FIELD_TYPE}, {FIELD_UNIT}, {FIELD_PRICE}, {FIELD_COMPANY_UID}) "
                 + $" VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -119,7 +119,7 @@ namespace product_and_receipt.Models.DBs.Tables
                     AddParamsForObjs(cmd, datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid);
                 });
         }
-        public void Update(ProductDatumWithUid datum)
+        public void Update(MaterialDatumWithUid datum)
         {
             DoExecuteNonQuery($"UPDATE {TABLE} SET {FIELD_NAME}=?,{FIELD_SPEC1}=?,{FIELD_SPEC2}=?,{FIELD_TYPE}=?,{FIELD_UNIT}=?,{FIELD_PRICE}=?,{FIELD_COMPANY_UID}=? WHERE {FIELD_UID}=?",
                 (OdbcCommand cmd) =>

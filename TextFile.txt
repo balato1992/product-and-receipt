@@ -1,6 +1,6 @@
 ﻿Pending:
 
-    product Auto complete
+    material Auto complete
     
     recipe
     save undone recipe
