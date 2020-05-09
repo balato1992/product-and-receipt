@@ -1,10 +1,11 @@
 ﻿using product_and_receipt.Models.DBs.structures;
 using System.Collections.Generic;
 using System.Data.Odbc;
+using System.Data.SqlClient;
 
 namespace product_and_receipt.Models.DBs.Tables
 {
-    public class MaterialTable : OdbcHelper
+    public class MaterialTable : SqlHelper
     {
         private static string TABLE => "PRODUCT_INFO";
         private static string FIELD_UID => "UID";
@@ -25,15 +26,15 @@ namespace product_and_receipt.Models.DBs.Tables
             FIELD_PRICE
         };
 
-        public MaterialTable(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
+        public MaterialTable(string connectionString, LogFunc log = null) : base(connectionString, log)
         {
         }
 
         public List<MaterialDatumWithUid> Get()
         {
             var list = new List<MaterialDatumWithUid>();
-            DoReadAll($"SELECT * FROM {TABLE}", null,
-                (OdbcDataReader reader) =>
+            DoReadAll($"SELECT * FROM {TABLE}",
+                (SqlDataReader reader) =>
                 {
                     MaterialDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
@@ -45,15 +46,11 @@ namespace product_and_receipt.Models.DBs.Tables
         {
             var list = new List<MaterialDatumWithUid>();
             DoReadAll($"SELECT * FROM {TABLE} WHERE {FIELD_COMPANY_UID}=?",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, companyUid);
-                },
-                (OdbcDataReader reader) =>
+                (SqlDataReader reader) =>
                 {
                     MaterialDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
-                });
+                }, companyUid);
 
             return list;
         }
@@ -67,8 +64,8 @@ namespace product_and_receipt.Models.DBs.Tables
             int rowsOffset = pageIndex * pageSize;
 
             int tmpCount = 0;
-            DoReadAll($"SELECT COUNT(*) AS CUS_COUNT FROM {TABLE}", null,
-                (OdbcDataReader reader) =>
+            DoReadAll($"SELECT COUNT(*) AS CUS_COUNT FROM {TABLE}",
+                (SqlDataReader reader) =>
                 {
                     ConvertToInt(reader["CUS_COUNT"], out tmpCount);
                 });
@@ -83,20 +80,16 @@ namespace product_and_receipt.Models.DBs.Tables
 
             var list = new List<MaterialDatumWithUid>();
             DoReadAll(sql,
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, SEARCH_FIELDS.ConvertAll(o => $"%{searchText}%").ToArray());
-                },
-                (OdbcDataReader reader) =>
+                (SqlDataReader reader) =>
                 {
                     MaterialDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
-                });
+                }, SEARCH_FIELDS.ConvertAll(o => $"%{searchText}%").ToArray());
 
             return list;
         }
 
-        public MaterialDatumWithUid ConvertTo(OdbcDataReader reader, string prefix = null)
+        public MaterialDatumWithUid ConvertTo(SqlDataReader reader, string prefix = null)
         {
             ConvertToInt(reader[prefix + FIELD_UID], out int uid);
             ConvertToString(reader[prefix + FIELD_NAME], out string name);
@@ -114,26 +107,17 @@ namespace product_and_receipt.Models.DBs.Tables
         {
             DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_NAME}, {FIELD_SPEC1}, {FIELD_SPEC2}, {FIELD_TYPE}, {FIELD_UNIT}, {FIELD_PRICE}, {FIELD_COMPANY_UID}) "
                 + $" VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid);
-                });
+                datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid);
         }
         public void Update(MaterialDatumWithUid datum)
         {
             DoExecuteNonQuery($"UPDATE {TABLE} SET {FIELD_NAME}=?,{FIELD_SPEC1}=?,{FIELD_SPEC2}=?,{FIELD_TYPE}=?,{FIELD_UNIT}=?,{FIELD_PRICE}=?,{FIELD_COMPANY_UID}=? WHERE {FIELD_UID}=?",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid, datum.Uid);
-                });
+                datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid, datum.Uid);
         }
         public void Delete(int uid)
         {
             DoExecuteNonQuery($"DELETE FROM {TABLE} WHERE {FIELD_UID}=?",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, uid);
-                });
+                uid);
         }
     }
 }

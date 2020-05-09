@@ -1,8 +1,9 @@
 ﻿using System.Data.Odbc;
+using System.Data.SqlClient;
 
 namespace product_and_receipt.Models.DBs.Tables
 {
-    public class RecordTable : OdbcHelper
+    public class RecordTable : SqlHelper
     {
         private static string TABLE => "RECORD";
         //private static string FIELD_UID => "UID";
@@ -10,7 +11,7 @@ namespace product_and_receipt.Models.DBs.Tables
         private static string FIELD_TAG => "TAG";
         private static string FIELD_JSON_DATA => "JSON_DATA";
 
-        public RecordTable(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
+        public RecordTable(string connectionString, LogFunc log = null) : base(connectionString, log)
         {
         }
 
@@ -18,12 +19,8 @@ namespace product_and_receipt.Models.DBs.Tables
         {
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
 
-            DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_TAG},{FIELD_JSON_DATA}) "
-                + $" VALUES (?, ?)",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, tag, json);
-                });
+            DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_TAG},{FIELD_JSON_DATA}) VALUES (?, ?)",
+                tag, json);
         }
     }
 }

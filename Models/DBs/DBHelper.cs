@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace product_and_receipt.Models.DBs
 {
-    public class DBHelper : OdbcHelper
+    public class DBHelper : SqlHelper
     {
         private CompanyTable _CompanyTable { get; set; }
         private MaterialTable _ProductTable { get; set; }
@@ -14,11 +14,11 @@ namespace product_and_receipt.Models.DBs
         public MaterialTable MaterialTable => _ProductTable;
         public RecordTable RecordTable => _RecordTable;
 
-        public DBHelper(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
+        public DBHelper(string connectionString, LogFunc log = null) : base(connectionString, log)
         {
-            _CompanyTable = new CompanyTable(dsn, id, password, log);
-            _ProductTable = new MaterialTable(dsn, id, password, log);
-            _RecordTable = new RecordTable(dsn, id, password, log);
+            _CompanyTable = new CompanyTable(connectionString, log);
+            _ProductTable = new MaterialTable(connectionString, log);
+            _RecordTable = new RecordTable(connectionString, log);
         }
 
 

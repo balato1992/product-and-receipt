@@ -28,7 +28,7 @@ namespace product_and_receipt.Models
 
                 try
                 {
-                    DB = new DBHelper(configLines[0], configLines[1], configLines[2], (Exception ex, string msgPrefix) =>
+                    DB = new DBHelper(configLines[0], (Exception ex, string msgPrefix) =>
                     {
                         Log.WriteLineException(msgPrefix, ex);
                     });

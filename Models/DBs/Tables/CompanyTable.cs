@@ -1,10 +1,11 @@
 ﻿using product_and_receipt.Models.DBs.structures;
 using System.Collections.Generic;
 using System.Data.Odbc;
+using System.Data.SqlClient;
 
 namespace product_and_receipt.Models.DBs.Tables
 {
-    public class CompanyTable : OdbcHelper
+    public class CompanyTable : SqlHelper
     {
         private static string TABLE => "COMPANY_INFO";
         private static string FIELD_UID => "UID";
@@ -20,7 +21,7 @@ namespace product_and_receipt.Models.DBs.Tables
             FIELD_FAX
         };
 
-        public CompanyTable(string dsn, string id, string password, LogFunc log = null) : base(dsn, id, password, log)
+        public CompanyTable(string connectionString, LogFunc log = null) : base(connectionString, log)
         {
         }
 
@@ -29,8 +30,8 @@ namespace product_and_receipt.Models.DBs.Tables
             string sql = $"SELECT * FROM {TABLE}";
 
             var list = new List<CompanyDatumWithUid>();
-            DoReadAll(sql, null,
-                (OdbcDataReader reader) =>
+            DoReadAll(sql,
+                (SqlDataReader reader) =>
                 {
                     CompanyDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
@@ -48,8 +49,8 @@ namespace product_and_receipt.Models.DBs.Tables
             int rowsOffset = pageIndex * pageSize;
 
             int tmpCount = 0;
-            DoReadAll($"SELECT COUNT(*) AS CUS_COUNT FROM {TABLE}", null,
-                (OdbcDataReader reader) =>
+            DoReadAll($"SELECT COUNT(*) AS CUS_COUNT FROM {TABLE}",
+                (SqlDataReader reader) =>
                 {
                     ConvertToInt(reader["CUS_COUNT"], out tmpCount);
                 });
@@ -63,20 +64,16 @@ namespace product_and_receipt.Models.DBs.Tables
 
             var list = new List<CompanyDatumWithUid>();
             DoReadAll(sql,
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, SEARCH_FIELDS.ConvertAll(o => $"%{searchText}%").ToArray());
-                },
-                (OdbcDataReader reader) =>
+                (SqlDataReader reader) =>
                 {
                     CompanyDatumWithUid item = ConvertTo(reader);
                     list.Add(item);
-                });
+                }, SEARCH_FIELDS.ConvertAll(o => $"%{searchText}%").ToArray());
 
             return list;
         }
 
-        private CompanyDatumWithUid ConvertTo(OdbcDataReader reader, string prefix = null)
+        private CompanyDatumWithUid ConvertTo(SqlDataReader reader, string prefix = null)
         {
             ConvertToInt(reader[prefix + FIELD_UID], out int uid);
             ConvertToString(reader[prefix + FIELD_NAME], out string name);
@@ -90,26 +87,17 @@ namespace product_and_receipt.Models.DBs.Tables
         public void Insert(CompanyDatum datum)
         {
             DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_NAME}, {FIELD_ADDRESS}, {FIELD_TELEPHONE}, {FIELD_FAX}) VALUES (?, ?, ?, ?)",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, datum.Name, datum.Address, datum.Telephone, datum.Fax);
-                });
+                datum.Name, datum.Address, datum.Telephone, datum.Fax);
         }
         public void Update(CompanyDatumWithUid datum)
         {
             DoExecuteNonQuery($"UPDATE {TABLE} SET {FIELD_NAME}=?,{FIELD_ADDRESS}=?,{FIELD_TELEPHONE}=?,{FIELD_FAX}=? WHERE {FIELD_UID}=?",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, datum.Name, datum.Address, datum.Telephone, datum.Fax, datum.Uid);
-                });
+                datum.Name, datum.Address, datum.Telephone, datum.Fax, datum.Uid);
         }
         public void Delete(int uid)
         {
             DoExecuteNonQuery($"DELETE FROM {TABLE} WHERE {FIELD_UID}=?",
-                (OdbcCommand cmd) =>
-                {
-                    AddParamsForObjs(cmd, uid);
-                });
+                uid);
         }
     }
 }
