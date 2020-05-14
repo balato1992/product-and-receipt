@@ -21,24 +21,54 @@ namespace product_and_receipt.Models
         }
 
         #region command
-        protected void DoCommand(string sql, Action<SqlCommand> action)
+        protected void DoCommand(string sql, Action<SqlCommand> action, params object[] parameters)
         {
-            DoCommand(_Log, _ConnectionString, sql, action);
+            DoCommand(_Log, _ConnectionString, sql, action, parameters);
         }
         protected void DoExecuteNonQuery(string sql, params object[] parameters)
         {
-            DoCommand(_Log, _ConnectionString, sql, (SqlCommand cmd) =>
+            DoCommand(sql, (SqlCommand cmd) =>
             {
                 cmd.ExecuteNonQuery();
             }, parameters);
         }
         protected int DoReadAll(string sql, Action<SqlDataReader> actionReader, params object[] parameters)
         {
-            return DoReadAll(_Log, _ConnectionString, sql, actionReader, parameters);
+            int count = 0;
+
+            DoCommand(sql, (SqlCommand cmd) =>
+            {
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    actionReader?.Invoke(reader);
+                    count++;
+                }
+            }, parameters);
+
+            return count;
         }
         protected int DoReadAllSeparate<T>(string sql1, string sql2, uint maxCount, List<T> data, Action<SqlDataReader> actionReader)
         {
-            return DoReadAllSeparate(_Log, _ConnectionString, sql1, sql2, maxCount, data, actionReader);
+            int sumCount = 0;
+
+            List<object> tmp = new List<object>();
+            for (int i = 0; i < data.Count; i++)
+            {
+                if (i % maxCount == 0)
+                {
+                    tmp = new List<object>();
+                }
+
+                tmp.Add(data[i]);
+
+                if (i % maxCount == maxCount - 1 || i == (data.Count - 1))
+                {
+                    sumCount += DoReadAll(sql1 + string.Join(",", tmp.ConvertAll(o => "?").ToArray()) + sql2, actionReader, tmp.ToArray());
+                }
+            }
+
+            return sumCount;
         }
         #region static
 
@@ -85,44 +115,6 @@ namespace product_and_receipt.Models
             }
         }
 
-        private static int DoReadAll(LogFunc log, string connectionString, string sql, Action<SqlDataReader> actionReader, params object[] parameters)
-        {
-            int count = 0;
-
-            DoCommand(log, connectionString, sql, (SqlCommand cmd) =>
-            {
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    actionReader?.Invoke(reader);
-                    count++;
-                }
-            }, parameters);
-
-            return count;
-        }
-        private static int DoReadAllSeparate<T>(LogFunc log, string connectionString, string sql1, string sql2, uint maxCount, List<T> data, Action<SqlDataReader> actionReader)
-        {
-            int sumCount = 0;
-
-            List<object> tmp = new List<object>();
-            for (int i = 0; i < data.Count; i++)
-            {
-                if (i % maxCount == 0)
-                {
-                    tmp = new List<object>();
-                }
-
-                tmp.Add(data[i]);
-
-                if (i % maxCount == maxCount - 1 || i == (data.Count - 1))
-                {
-                    sumCount += DoReadAll(log, connectionString, sql1 + string.Join(",", tmp.ConvertAll(o => "?").ToArray()) + sql2, actionReader, tmp.ToArray());
-                }
-            }
-
-            return sumCount;
-        }
 
         private static string CONST_PARAM_NAME => "PA";
         private static string ReplaceQuestionMark(string sql)

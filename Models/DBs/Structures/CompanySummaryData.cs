@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace product_and_receipt.Models.DBs.structures
+namespace product_and_receipt.Models.DBs.Structures
 {
     public class CompanySummaryData
     {

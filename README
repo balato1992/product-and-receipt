@@ -1,1 +1,14 @@
 ﻿DOT NET Core 3.1 + React
+
+
+
+
+TO-DO:
+    implement recipe page
+    
+    save undone recipe
+    Auto complete (Material)
+    
+    起始頁面讀取(淡入)
+    錯誤訊息包裝
+    錯誤訊息: 重複鍵值 (公司名稱)

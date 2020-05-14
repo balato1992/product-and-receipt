@@ -1,4 +1,4 @@
-﻿using product_and_receipt.Models.DBs.structures;
+﻿using product_and_receipt.Models.DBs.Structures;
 using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;

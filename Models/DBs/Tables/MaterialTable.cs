@@ -1,4 +1,4 @@
-﻿using product_and_receipt.Models.DBs.structures;
+﻿using product_and_receipt.Models.DBs.Structures;
 using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;
@@ -89,7 +89,7 @@ namespace product_and_receipt.Models.DBs.Tables
             return list;
         }
 
-        public MaterialDatumWithUid ConvertTo(SqlDataReader reader, string prefix = null)
+        private MaterialDatumWithUid ConvertTo(SqlDataReader reader, string prefix = null)
         {
             ConvertToInt(reader[prefix + FIELD_UID], out int uid);
             ConvertToString(reader[prefix + FIELD_NAME], out string name);
