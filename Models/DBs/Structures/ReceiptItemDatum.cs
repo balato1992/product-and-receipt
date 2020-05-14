@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace product_and_receipt.Models.DBs.Structures
+﻿namespace product_and_receipt.Models.DBs.Structures
 {
     public class ReceiptItemDatum
     {

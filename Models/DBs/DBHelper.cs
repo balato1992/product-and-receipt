@@ -7,19 +7,19 @@ namespace product_and_receipt.Models.DBs
     public class DBHelper : SqlHelper
     {
         private CompanyTable _CompanyTable { get; set; }
-        private MaterialTable _ProductTable { get; set; }
+        private MaterialTable _MaterialTable { get; set; }
         private ReceiptTable _ReceiptTable { get; set; }
         private RecordTable _RecordTable { get; set; }
 
         public CompanyTable CompanyTable => _CompanyTable;
-        public MaterialTable MaterialTable => _ProductTable;
+        public MaterialTable MaterialTable => _MaterialTable;
         public ReceiptTable ReceiptTable => _ReceiptTable;
         public RecordTable RecordTable => _RecordTable;
 
         public DBHelper(string connectionString, LogFunc log = null) : base(connectionString, log)
         {
             _CompanyTable = new CompanyTable(connectionString, log);
-            _ProductTable = new MaterialTable(connectionString, log);
+            _MaterialTable = new MaterialTable(connectionString, log);
             _ReceiptTable = new ReceiptTable(connectionString, log);
             _RecordTable = new RecordTable(connectionString, log);
         }
@@ -32,7 +32,7 @@ namespace product_and_receipt.Models.DBs
             var companies = _CompanyTable.Get();
             foreach (var company in companies)
             {
-                var products = _ProductTable.Get(company.Uid);
+                var products = _MaterialTable.Get(company.Uid);
 
                 var item = new CompanySummaryData(company, products);
 

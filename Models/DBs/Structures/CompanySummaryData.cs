@@ -5,12 +5,12 @@ namespace product_and_receipt.Models.DBs.Structures
     public class CompanySummaryData
     {
         public CompanyDatumWithUid Company { get; set; }
-        public List<MaterialDatumWithUid> ProductData { get; set; }
+        public List<MaterialDatumWithUid> MaterialData { get; set; }
 
-        public CompanySummaryData(CompanyDatumWithUid company, List<MaterialDatumWithUid> productData)
+        public CompanySummaryData(CompanyDatumWithUid company, List<MaterialDatumWithUid> materialData)
         {
             Company = company;
-            ProductData = productData;
+            MaterialData = materialData;
         }
     }
 }
