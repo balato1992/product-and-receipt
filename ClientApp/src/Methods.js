@@ -1,5 +1,14 @@
 
-export function cusFetch(url,method, data, resolve, reject) {
+export function jsonCopyObject(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+export function cusGetUidForView() {
+    // reference: https://cythilya.github.io/2017/03/12/uuid/
+    return "view" + performance.now() + Math.random();
+}
+
+export function cusFetch(url, method, data, resolve, reject) {
 
     fetch(url, {
         method: method,
@@ -67,3 +76,4 @@ export let LocalizationObj = {
         }
     }
 };
+
