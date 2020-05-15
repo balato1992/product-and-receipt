@@ -59,7 +59,6 @@ export function MaterialPage() {
                         })
                     });
             });
-
     };
     const editable = {
         onRowAdd: newData =>

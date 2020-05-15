@@ -92,7 +92,7 @@ namespace product_and_receipt.Models.DBs.Tables
                     + $" FROM {tempTable}; ";
                 parameter.Add(item.ProductName);
                 parameter.Add(item.Price);
-                parameter.Add(item.Number);
+                parameter.Add(item.ProductNumber);
             }
 
             sql += $" SELECT * FROM {tempTable}; ";
@@ -125,7 +125,7 @@ namespace product_and_receipt.Models.DBs.Tables
                 parameter.Add(datum.Uid);
                 parameter.Add(item.ProductName);
                 parameter.Add(item.Price);
-                parameter.Add(item.Number);
+                parameter.Add(item.ProductNumber);
             }
 
             DoExecuteNonQuery(sql, parameter.ToArray());

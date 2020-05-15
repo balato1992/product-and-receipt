@@ -4,13 +4,13 @@
     {
         public string ProductName { get; set; }
         public decimal Price { get; set; }
-        public decimal Number { get; set; }
+        public decimal ProductNumber { get; set; }
 
-        public ReceiptItemDatum(string productName, decimal price, decimal number)
+        public ReceiptItemDatum(string productName, decimal price, decimal productNumber)
         {
             ProductName = productName;
             Price = price;
-            Number = number;
+            ProductNumber = productNumber;
         }
     }
 }
