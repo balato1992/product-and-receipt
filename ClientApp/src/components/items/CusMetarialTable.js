@@ -21,7 +21,7 @@ export function CusMetarialTable(props) {
                         backgroundColor: (rowData.tableData.id % 2 === 1) ? '#EEE' : '#FFF'
                     }),
                     headerStyle: {
-                        backgroundColor: '#e0f7fa'
+                        backgroundColor: Methods.getMainBgcolor()
                     },
                     grouping: grouping,
                     pageSize: 10

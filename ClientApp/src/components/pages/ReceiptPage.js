@@ -7,15 +7,22 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import { ReceiptRow, ReceiptRowType } from '../items/ReceiptRow';
+import { ReceiptRow, SelectedRowMode } from '../items/ReceiptRow';
 import * as Methods from '../../Methods'
 
 export function ReceiptPage() {
 
+
     const [receipts, setReceipts] = useState([]);
     const [selectedRowAndMode, setSelectedRowAndMode] = useState(undefined);
+
+    const [addRowItem, setAddRowItem] = useState(getNewReceipt());
+    const [showAddItem, setShowAddItem] = useState(false);
+
+    const baseUrl = "ReceiptInfo";
+
     useEffect(() => {
-        getDate();
+        getData();
     }, []);
 
     /*
@@ -33,9 +40,9 @@ export function ReceiptPage() {
             public decimal Number { get; set; }
     
      */
-    function getDate() {
+    function getData() {
 
-        fetch('ReceiptInfo')
+        fetch(baseUrl)
             .then(response => response.json())
             .then(result => {
 
@@ -51,20 +58,41 @@ export function ReceiptPage() {
                 console.log(result);
             });
     };
+    function getDataAction(method) {
+
+        return (data, doneFunc) => {
+            Methods.cusFetch(baseUrl, method, data,
+                () => {
+                    alert("上傳成功");
+
+                    doneFunc();
+                    getData();
+                },
+                () => {
+                    alert("上傳失敗");
+                });
+        };
+    }
+
+    function getNewReceipt() {
+        return {
+            id: "",
+            payee: "",
+            date: new Date().toUTCString(),
+            items: []
+        };
+    }
 
     function addClick() {
 
-        let newReceipts = [{
-            uidForView: Methods.cusGetUidForView(),
-            id: "--",
-            payee: 0,
-            date: Date.now,
-            items: []
-        }, ...receipts];
+        if (!showAddItem) {
+            let receipt = getNewReceipt();
+            setAddRowItem(receipt);
+            onSelectedRow(receipt, SelectedRowMode.ModifyMode);
+        }
 
-        setReceipts(newReceipts);
+        setShowAddItem(!showAddItem);
     }
-
     function onSelectedRow(rowData, mode) {
 
         if (rowData !== undefined
@@ -88,19 +116,27 @@ export function ReceiptPage() {
                 <TableContainer>
                     <Table>
                         <TableHead>
-                            <TableRow>
+                            <TableRow className="cus-main-bgcolor">
                                 <TableCell style={{ minWidth: "120px" }}></TableCell>
                                 <TableCell component="th" scope="row">編號</TableCell>
                                 <TableCell component="th" scope="row">客戶名稱</TableCell>
                                 <TableCell component="th" scope="row" style={{ minWidth: "100px" }}>日期</TableCell>
                                 <TableCell></TableCell>
+                                <TableCell></TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
+                            {showAddItem &&
+                                <ReceiptRow selectedRowAndMode={selectedRowAndMode} inputData={addRowItem}
+                                    confirmAction={getDataAction('post')}
+                                    onActionDone={() => { setShowAddItem(false); }}
+                                    onSelectedRow={onSelectedRow} ></ReceiptRow>
+                            }
                             {receipts.map((item, index) => (
                                 <ReceiptRow
                                     key={item.uid} selectedRowAndMode={selectedRowAndMode} inputData={item}
-                                    onSelectedRow={onSelectedRow} onConfirm={getDate}></ReceiptRow>
+                                    confirmAction={getDataAction('patch')}
+                                    onSelectedRow={onSelectedRow} ></ReceiptRow>
                             ))}
                         </TableBody>
                     </Table>

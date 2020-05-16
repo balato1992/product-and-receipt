@@ -10,7 +10,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import * as Methods from '../../Methods'
+import * as Methods from '../../Methods';
 
 
 export const ReceiptRowType = {
@@ -18,8 +18,8 @@ export const ReceiptRowType = {
     Disabled: 1,
     Modify: 2
 }
-const SelectedRowMode = {
-    ModifyMode: 2
+export const SelectedRowMode = {
+    ModifyMode: 0
 }
 const ItemActionType = {
     Handel: 0,
@@ -31,9 +31,9 @@ export function ReceiptRow(props) {
     const oriData = props.inputData;
     const [changedData, setChangedData] = useState(Methods.jsonCopyObject(props.inputData));
     const selectedRowAndMode = props.selectedRowAndMode;
+    const confirmAction = props.confirmAction;
+    const onActionDone = props.onActionDone;
     const onSelectedRow = props.onSelectedRow;
-    const onConfirm = props.onConfirm;
-    const baseUrl = "ReceiptInfo";
 
     const [showDetail, setShowDetail] = useState(false);
 
@@ -80,47 +80,40 @@ export function ReceiptRow(props) {
 
     function updateClick() {
         setChangedData(Methods.jsonCopyObject(oriData));
-        setShowDetail(true);
+        setShowDetail(false);
         onSelectedRow(oriData, SelectedRowMode.ModifyMode);
     }
     function updateConfirmClick() {
-        Methods.cusFetch(baseUrl, 'patch', changedData,
-            () => {
-                alert("success");
-                onConfirm();
-
-                setChangedData(Methods.jsonCopyObject(oriData));
-                setShowDetail(false);
-                onSelectedRow();
-            },
-            () => {
-                alert("error");
-            });
+        confirmAction(changedData, () => {
+            finishAction();
+        });
     }
-    function updateCancelClick() {
-        setChangedData(Methods.jsonCopyObject(oriData));
-        setShowDetail(false);
+    function finishAction() {
+
         onSelectedRow();
+        if (onActionDone) {
+            onActionDone();
+        }
     }
 
     function checkRowType(type) {
-        return getCurrentRowType() == type;
-    }
-    function getCurrentRowType() {
 
-        if (selectedRowAndMode != undefined) {
+        let currentType = ReceiptRowType.View;
+        if (selectedRowAndMode != undefined && selectedRowAndMode.mode == SelectedRowMode.ModifyMode) {
 
-            if (selectedRowAndMode.mode == SelectedRowMode.ModifyMode) {
-                if (selectedRowAndMode.rowData == oriData) {
-                    return ReceiptRowType.Modify;
-                } else {
-                    return ReceiptRowType.Disabled;
-                }
+            if (selectedRowAndMode.rowData == oriData) {
+                currentType = ReceiptRowType.Modify;
+            } else {
+                currentType = ReceiptRowType.Disabled;
             }
         }
 
-        return ReceiptRowType.View;
+        return currentType == type;
     }
+    function getCompleteShowDetail() {
+        return showDetail || checkRowType(ReceiptRowType.Modify);
+    }
+
 
     function getTotal(item) {
         return item.price * item.productNumber;
@@ -148,7 +141,7 @@ export function ReceiptRow(props) {
                     :
                     <div>
                         <button onClick={updateConfirmClick}>確定</button>
-                        <button onClick={updateCancelClick}>取消</button>
+                        <button onClick={finishAction}>取消</button>
                     </div>
                 }
             </TableCell>
@@ -171,12 +164,14 @@ export function ReceiptRow(props) {
                 }
             </TableCell>
             <TableCell>
-                {!editable &&
+                {!editable && !getCompleteShowDetail() &&
                     <React.Fragment>
-                        SUM: {getTotalSum(data.items)} (NUM: {data.items.length})
-                        <button onClick={() => { setShowDetail(!showDetail); }} >Detail</button>
+                        合計: {getTotalSum(data.items)}
                     </React.Fragment>
                 }
+            </TableCell>
+            <TableCell>
+                {!editable && <button onClick={() => { setShowDetail(!showDetail); }} >Detail</button>}
             </TableCell>
         </TableRow>;
     }
@@ -185,7 +180,6 @@ export function ReceiptRow(props) {
             {
                 data.items.map((item, index) => (
                     <TableRow key={item.uidForView}>
-                        <TableCell></TableCell>
                         <TableCell>
                             {editable
                                 ? (<TextField name="productName" fullWidth defaultValue={item.productName} onChange={(e) => { itemActionClick(ItemActionType.Handel, index, e); }} />)
@@ -198,7 +192,7 @@ export function ReceiptRow(props) {
                                 : (<React.Fragment>{item.price}</React.Fragment>)
                             }
                         </TableCell>
-                        <TableCell>*</TableCell>
+                        <TableCell>×</TableCell>
                         <TableCell>
                             {editable
                                 ? (<TextField name="productNumber" fullWidth type="number" defaultValue={item.productNumber} onChange={(e) => { itemActionClick(ItemActionType.Handel, index, e); }} />)
@@ -214,7 +208,7 @@ export function ReceiptRow(props) {
                 ))
             }
             <TableRow>
-                <TableCell colSpan={4}></TableCell>
+                <TableCell colSpan={3}></TableCell>
                 <TableCell align="right">合計:</TableCell>
                 <TableCell></TableCell>
                 <TableCell>{getTotalSum(data.items)}</TableCell>
@@ -228,23 +222,21 @@ export function ReceiptRow(props) {
             {
                 getView_HeaderRow(checkRowType(ReceiptRowType.Modify), checkRowType(ReceiptRowType.Disabled))
             }
-            {showDetail &&
+            {getCompleteShowDetail() &&
                 <TableRow>
                     <TableCell>
                     </TableCell>
-                    <TableCell colSpan={10}>
-
+                    <TableCell colSpan={5}>
                         <TableContainer>
                             <Table>
                                 <TableHead>
-                                    <TableRow>
-                                        <TableCell></TableCell>
+                                    <TableRow className="cus-main-bgcolor">
                                         <TableCell>名稱</TableCell>
-                                        <TableCell style={{ width: "15%", minWidth: "100px" }}>單價</TableCell>
+                                        <TableCell style={{ width: "15%" }}>單價</TableCell>
                                         <TableCell style={{ width: "10px" }}></TableCell>
-                                        <TableCell style={{ width: "15%", minWidth: "100px" }}>數量</TableCell>
+                                        <TableCell style={{ width: "15%" }}>數量</TableCell>
                                         <TableCell style={{ width: "10px" }}></TableCell>
-                                        <TableCell style={{ width: "10%", minWidth: "120px" }}>總價</TableCell>
+                                        <TableCell style={{ width: "10%" }}>總價</TableCell>
                                         <TableCell style={{ width: "120px" }}>
                                             {checkRowType(ReceiptRowType.Modify) && (<button onClick={() => { itemActionClick(ItemActionType.Add); }}>新增項目</button>)}
                                         </TableCell>
@@ -259,7 +251,6 @@ export function ReceiptRow(props) {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-
                     </TableCell>
                 </TableRow>
             }
