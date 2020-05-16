@@ -5,10 +5,14 @@
 
 TO-DO:
     implement recipe page
-    
-    save undone recipe
-    Auto complete (Material)
+        日期欄位
+        介面調整 (按鈕改圖案)
+        搜尋功能
+        save undone recipe
+        auto complete by Material
+        20200517 by Chad, turn showDetail to false when the row is disabled, maybe there has a better way to slove this
     
     起始頁面讀取(淡入)
+
     錯誤訊息包裝
     錯誤訊息: 重複鍵值 (公司名稱)

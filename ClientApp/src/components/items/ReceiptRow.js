@@ -13,13 +13,17 @@ import TableRow from '@material-ui/core/TableRow';
 import * as Methods from '../../Methods';
 
 
-export const ReceiptRowType = {
+export const ReceiptRowTypeForView = {
     View: 0,
     Disabled: 1,
-    Modify: 2
+    Add: 2,
+    Modify: 3,
+    Delete: 4
 }
 export const SelectedRowMode = {
-    ModifyMode: 0
+    AddMode: 0,
+    ModifyMode: 1,
+    DeleteMode: 2
 }
 const ItemActionType = {
     Handel: 0,
@@ -84,7 +88,10 @@ export function ReceiptRow(props) {
         setShowDetail(false);
         onSelectedRow(oriData, SelectedRowMode.ModifyMode);
     }
-    function updateConfirmClick() {
+    function deleteClick() {
+        onSelectedRow(oriData, SelectedRowMode.DeleteMode);
+    }
+    function confirmClick() {
         confirmAction(changedData, () => {
             finishAction();
         });
@@ -99,20 +106,41 @@ export function ReceiptRow(props) {
 
     function checkRowType(type) {
 
-        let currentType = ReceiptRowType.View;
-        if (selectedRowAndMode != undefined && selectedRowAndMode.mode == SelectedRowMode.ModifyMode) {
+        let currentType = ReceiptRowTypeForView.View;
+        if (selectedRowAndMode != undefined) {
 
             if (selectedRowAndMode.rowData == oriData) {
-                currentType = ReceiptRowType.Modify;
+                switch (selectedRowAndMode.mode) {
+                    case SelectedRowMode.AddMode:
+                        currentType = ReceiptRowTypeForView.Add;
+                        break;
+                    case SelectedRowMode.ModifyMode:
+                        currentType = ReceiptRowTypeForView.Modify;
+                        break;
+                    case SelectedRowMode.DeleteMode:
+                        currentType = ReceiptRowTypeForView.Delete;
+                        break;
+                }
             } else {
-                currentType = ReceiptRowType.Disabled;
+                currentType = ReceiptRowTypeForView.Disabled;
             }
         }
 
         return currentType == type;
     }
+    function getEditable() {
+        return checkRowType(ReceiptRowTypeForView.Add) || checkRowType(ReceiptRowTypeForView.Modify);
+    }
     function getCompleteShowDetail() {
-        return showDetail || checkRowType(ReceiptRowType.Modify);
+
+        // 20200517 by Chad, turn showDetail to false when the row is disabled, maybe there has a better way to slove this
+        if (checkRowType(ReceiptRowTypeForView.Disabled)) {
+            setTimeout(() => {
+                setShowDetail(false);
+            }, 1);
+        }
+
+        return showDetail || getEditable();
     }
 
 
@@ -129,73 +157,94 @@ export function ReceiptRow(props) {
         return sum;
     }
 
-    function getView_HeaderRow(editable, disabled) {
-        let data = !editable ? oriData : changedData;
+    function getView_HeaderRow() {
+        let isEditing = getEditable();
+        let isDeleting = checkRowType(ReceiptRowTypeForView.Delete);
+        let isDisabled = checkRowType(ReceiptRowTypeForView.Disabled);
 
-        return <TableRow>
-            <TableCell>
-                {!editable
+        let opacity = isDisabled ? 0.4 : 1;
+        let data = isEditing ? changedData : oriData;
+
+        return (
+            <TableRow style={{ opacity: opacity }}>
+                <TableCell>
+                    {isEditing || isDeleting
+                        ?
+                        <div>
+                            <button disabled={isDisabled} onClick={confirmClick} >確定</button>
+                            <button disabled={isDisabled} onClick={finishAction} >取消</button>
+                        </div>
+                        :
+                        <div>
+                            <button disabled={isDisabled} onClick={updateClick} >修改</button>
+                            <button disabled={isDisabled} onClick={deleteClick} >刪除</button>
+                        </div>
+                    }
+                </TableCell>
+                {(isDeleting)
                     ?
-                    <div>
-                        <button onClick={updateClick} disabled={disabled} >修改</button>
-                    </div>
-                    :
-                    <div>
-                        <button onClick={updateConfirmClick}>確定</button>
-                        <button onClick={finishAction}>取消</button>
-                    </div>
-                }
-            </TableCell>
-            <TableCell>
-                {editable
-                    ? <TextField name="id" defaultValue={data.id} onChange={(e) => { handleChange(e); }} />
-                    : <React.Fragment>{data.id}</React.Fragment>
-                }
-            </TableCell>
-            <TableCell>
-                {editable
-                    ? <TextField name="payee" defaultValue={data.payee} onChange={(e) => { handleChange(e); }} />
-                    : <React.Fragment>{data.payee}</React.Fragment>
-                }
-            </TableCell>
-            <TableCell>
-                {editable
-                    ? <TextField name="date" type="datetime" defaultValue={data.date} onChange={(e) => { handleChange(e); }} />
-                    : <React.Fragment>{data.date}</React.Fragment>
-                }
-            </TableCell>
-            <TableCell>
-                {!editable && !getCompleteShowDetail() &&
                     <React.Fragment>
-                        合計: {getTotalSum(data.items)}
+                        <TableCell colSpan={5}>
+                            是否刪除 編號: {data.id}, 客戶名稱: {data.payee}, 日期: {data.date}?
+                        </TableCell>
+                    </React.Fragment>
+                    :
+                    <React.Fragment>
+                        <TableCell>
+                            {isEditing
+                                ? <TextField name="id" defaultValue={data.id} onChange={(e) => { handleChange(e); }} />
+                                : <React.Fragment>{data.id}</React.Fragment>
+                            }
+                        </TableCell>
+                        <TableCell>
+                            {isEditing
+                                ? <TextField name="payee" defaultValue={data.payee} onChange={(e) => { handleChange(e); }} />
+                                : <React.Fragment>{data.payee}</React.Fragment>
+                            }
+                        </TableCell>
+                        <TableCell>
+                            {isEditing
+                                ? <TextField name="date" type="datetime" defaultValue={data.date} onChange={(e) => { handleChange(e); }} />
+                                : <React.Fragment>{data.date}</React.Fragment>
+                            }
+                        </TableCell>
+                        <TableCell>
+                            {!isEditing && !getCompleteShowDetail() &&
+                                <React.Fragment>
+                                    合計: {getTotalSum(data.items)}
+                                </React.Fragment>
+                            }
+                        </TableCell>
+                        <TableCell>
+                            {!isEditing && <button disabled={isDisabled} onClick={() => { setShowDetail(!showDetail); }} >Detail</button>}
+                        </TableCell>
                     </React.Fragment>
                 }
-            </TableCell>
-            <TableCell>
-                {!editable && <button onClick={() => { setShowDetail(!showDetail); }} >Detail</button>}
-            </TableCell>
-        </TableRow>;
+            </TableRow>
+        );
     }
-    function getView_ItemRow(data, editable) {
+    function getView_ItemRow(isEditing) {
+        let data = isEditing ? changedData : oriData;
+
         return <React.Fragment>
             {
                 data.items.map((item, index) => (
                     <TableRow key={item.uidForView}>
                         <TableCell>
-                            {editable
+                            {isEditing
                                 ? (<TextField name="productName" fullWidth defaultValue={item.productName} onChange={(e) => { itemActionClick(ItemActionType.Handel, index, e); }} />)
                                 : (<React.Fragment>{item.productName}</React.Fragment>)
                             }
                         </TableCell>
                         <TableCell>
-                            {editable
+                            {isEditing
                                 ? (<TextField name="price" fullWidth type="number" defaultValue={item.price} onChange={(e) => { itemActionClick(ItemActionType.Handel, index, e); }} />)
                                 : (<React.Fragment>{item.price}</React.Fragment>)
                             }
                         </TableCell>
                         <TableCell>×</TableCell>
                         <TableCell>
-                            {editable
+                            {isEditing
                                 ? (<TextField name="productNumber" fullWidth type="number" defaultValue={item.productNumber} onChange={(e) => { itemActionClick(ItemActionType.Handel, index, e); }} />)
                                 : (<React.Fragment>{item.productNumber}</React.Fragment>)
                             }
@@ -203,7 +252,7 @@ export function ReceiptRow(props) {
                         <TableCell>=</TableCell>
                         <TableCell>{getTotal(item)}</TableCell>
                         <TableCell>
-                            {editable && (<button onClick={() => { itemActionClick(ItemActionType.Delete, index); }}>移除</button>)}
+                            {isEditing && (<button onClick={() => { itemActionClick(ItemActionType.Delete, index); }}>移除</button>)}
                         </TableCell>
                     </TableRow>
                 ))
@@ -220,9 +269,7 @@ export function ReceiptRow(props) {
 
     return (
         <React.Fragment>
-            {
-                getView_HeaderRow(checkRowType(ReceiptRowType.Modify), checkRowType(ReceiptRowType.Disabled))
-            }
+            {getView_HeaderRow()}
             {getCompleteShowDetail() &&
                 <TableRow>
                     <TableCell>
@@ -230,8 +277,8 @@ export function ReceiptRow(props) {
                     <TableCell colSpan={5}>
                         <TableContainer>
                             <Table size="small">
-                            <TableHead>
-                            <TableRow>
+                                <TableHead>
+                                    <TableRow>
                                         <TableCell>名稱</TableCell>
                                         <TableCell style={{ width: "15%" }}>單價</TableCell>
                                         <TableCell style={{ width: "10px" }}></TableCell>
@@ -239,16 +286,12 @@ export function ReceiptRow(props) {
                                         <TableCell style={{ width: "10px" }}></TableCell>
                                         <TableCell style={{ width: "10%" }}>總價</TableCell>
                                         <TableCell style={{ width: "120px" }}>
-                                            {checkRowType(ReceiptRowType.Modify) && (<button onClick={() => { itemActionClick(ItemActionType.Add); }}>新增項目</button>)}
+                                            {getEditable() && (<button onClick={() => { itemActionClick(ItemActionType.Add); }}>新增項目</button>)}
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {
-                                        checkRowType(ReceiptRowType.Modify)
-                                            ? getView_ItemRow(changedData, true)
-                                            : getView_ItemRow(oriData, false)
-                                    }
+                                    {getView_ItemRow(getEditable())}
                                 </TableBody>
                             </Table>
                         </TableContainer>

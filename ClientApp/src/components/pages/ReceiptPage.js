@@ -56,15 +56,36 @@ export function ReceiptPage() {
                     }
                 }
                 setReceipts(result);
-                console.log(result);
             });
     };
-    function getDataAction(method) {
-
+    function getDataAction() {
         return (data, doneFunc) => {
+
+            if (selectedRowAndMode === undefined) {
+                alert("發生錯誤 0012");
+                return;
+            }
+
+            let method = "";
+            switch (selectedRowAndMode.mode) {
+                case SelectedRowMode.AddMode:
+                    method = 'post';
+                    break;
+                case SelectedRowMode.ModifyMode:
+                    method = 'patch';
+                    break;
+                case SelectedRowMode.DeleteMode:
+                    method = 'delete';
+                    data = data.uid;
+                    break;
+                default:
+                    alert("發生錯誤 0012");
+                    return;
+            }
+
             Methods.cusFetch(baseUrl, method, data,
                 () => {
-                    alert("上傳成功");
+                    //alert("上傳成功");
 
                     doneFunc();
                     getData();
@@ -89,7 +110,7 @@ export function ReceiptPage() {
         if (!showAddItem) {
             let receipt = getNewReceipt();
             setAddRowItem(receipt);
-            onSelectedRow(receipt, SelectedRowMode.ModifyMode);
+            onSelectedRow(receipt, SelectedRowMode.AddMode);
         }
 
         setShowAddItem(!showAddItem);
@@ -129,14 +150,14 @@ export function ReceiptPage() {
                         <TableBody>
                             {showAddItem &&
                                 <ReceiptRow selectedRowAndMode={selectedRowAndMode} inputData={addRowItem}
-                                    confirmAction={getDataAction('post')}
+                                    confirmAction={getDataAction()}
                                     onActionDone={() => { setShowAddItem(false); }}
                                     onSelectedRow={onSelectedRow} ></ReceiptRow>
                             }
                             {receipts.map((item, index) => (
                                 <ReceiptRow
                                     key={item.uid} selectedRowAndMode={selectedRowAndMode} inputData={item}
-                                    confirmAction={getDataAction('patch')}
+                                    confirmAction={getDataAction()}
                                     onSelectedRow={onSelectedRow} ></ReceiptRow>
                             ))}
                         </TableBody>
