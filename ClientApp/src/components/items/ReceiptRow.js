@@ -28,6 +28,7 @@ const ItemActionType = {
 }
 
 export function ReceiptRow(props) {
+
     const oriData = props.inputData;
     const [changedData, setChangedData] = useState(Methods.jsonCopyObject(props.inputData));
     const selectedRowAndMode = props.selectedRowAndMode;
@@ -228,9 +229,9 @@ export function ReceiptRow(props) {
                     </TableCell>
                     <TableCell colSpan={5}>
                         <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow className="cus-main-bgcolor">
+                            <Table size="small">
+                            <TableHead>
+                            <TableRow>
                                         <TableCell>名稱</TableCell>
                                         <TableCell style={{ width: "15%" }}>單價</TableCell>
                                         <TableCell style={{ width: "10px" }}></TableCell>

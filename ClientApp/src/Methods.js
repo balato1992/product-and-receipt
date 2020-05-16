@@ -1,4 +1,6 @@
 
+/* #baddf9, #edffff, #89abc6 */
+/* #e3f2fd, #ffffff, #b1bfca */
 export function getMainBgcolor() {
     return "#e0f7fa";
 }

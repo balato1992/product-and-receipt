@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -113,14 +114,14 @@ export function ReceiptPage() {
             <button onClick={addClick}>新增收據紀錄</button>
 
             <div style={{ maxWidth: '100%' }}>
-                <TableContainer>
+                <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow className="cus-main-bgcolor">
+                            <TableRow>
                                 <TableCell style={{ minWidth: "120px" }}></TableCell>
-                                <TableCell component="th" scope="row">編號</TableCell>
-                                <TableCell component="th" scope="row">客戶名稱</TableCell>
-                                <TableCell component="th" scope="row" style={{ minWidth: "100px" }}>日期</TableCell>
+                                <TableCell>編號</TableCell>
+                                <TableCell>客戶名稱</TableCell>
+                                <TableCell style={{ minWidth: "100px" }}>日期</TableCell>
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
                             </TableRow>
