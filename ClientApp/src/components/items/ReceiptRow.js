@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
+import InputBase from '@material-ui/core/InputBase';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -193,26 +194,24 @@ export function ReceiptRow(props) {
                         <TableCell>
                             {isEditing
                                 ? <TextField name="id" defaultValue={data.id} onChange={(e) => { handleChange(e); }} />
-                                : <React.Fragment>{data.id}</React.Fragment>
+                                : <InputBase defaultValue={data.id} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
                             {isEditing
                                 ? <TextField name="payee" defaultValue={data.payee} onChange={(e) => { handleChange(e); }} />
-                                : <React.Fragment>{data.payee}</React.Fragment>
+                                : <InputBase defaultValue={data.payee} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
                             {isEditing
-                                ? <TextField name="date" type="datetime" defaultValue={data.date} onChange={(e) => { handleChange(e); }} />
-                                : <React.Fragment>{data.date}</React.Fragment>
+                                ? <TextField name="date" type="datetime-local" defaultValue={data.date} onChange={(e) => { handleChange(e); }} />
+                                : <InputBase type="datetime-local" defaultValue={data.date} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
                             {!isEditing && !getCompleteShowDetail() &&
-                                <React.Fragment>
-                                    合計: {getTotalSum(data.items)}
-                                </React.Fragment>
+                                <InputBase defaultValue={"合計: " + getTotalSum(data.items)} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>

@@ -97,10 +97,13 @@ export function ReceiptPage() {
     }
 
     function getNewReceipt() {
+        let date = new Date();
+        date.setHours(date.getHours() + 8);
+
         return {
-            id: "",
-            payee: "",
-            date: new Date().toUTCString(),
+            id: "-",
+            payee: "-",
+            date: date.toISOString().substr(0, 19),
             items: []
         };
     }
