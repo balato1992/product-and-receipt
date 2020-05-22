@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+
+import AddBoxIcon from '@material-ui/icons/AddBox';
 
 import { ReceiptRow, SelectedRowMode } from '../items/ReceiptRow';
 import * as Methods from '../../Methods'
@@ -135,14 +138,14 @@ export function ReceiptPage() {
 
     return (
         <div>
-            <button onClick={addClick}>新增收據紀錄</button>
+            <Button variant="outlined" startIcon={<AddBoxIcon />} style={{ margin: "8px" }} onClick={addClick} >新增收據紀錄</Button>
 
             <div style={{ maxWidth: '100%' }}>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell style={{ minWidth: "120px" }}></TableCell>
+                                <TableCell style={{ minWidth: "200px" }}></TableCell>
                                 <TableCell>編號</TableCell>
                                 <TableCell>客戶名稱</TableCell>
                                 <TableCell style={{ minWidth: "100px" }}>日期</TableCell>

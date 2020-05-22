@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import InputBase from '@material-ui/core/InputBase';
 
@@ -10,6 +10,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import * as Methods from '../../Methods';
 
@@ -171,22 +179,24 @@ export function ReceiptRow(props) {
                 <TableCell>
                     {isEditing || isDeleting
                         ?
-                        <div>
-                            <button disabled={isDisabled} onClick={confirmClick} >確定</button>
-                            <button disabled={isDisabled} onClick={finishAction} >取消</button>
-                        </div>
+                        <React.Fragment>
+                            <Button variant="outlined" size="small" startIcon={<CheckIcon />} disabled={isDisabled} onClick={confirmClick} >確定</Button>
+                            &nbsp;
+                            <Button variant="outlined" size="small" startIcon={<ClearIcon />} disabled={isDisabled} onClick={finishAction} >取消</Button>
+                        </React.Fragment>
                         :
-                        <div>
-                            <button disabled={isDisabled} onClick={updateClick} >修改</button>
-                            <button disabled={isDisabled} onClick={deleteClick} >刪除</button>
-                        </div>
+                        <React.Fragment>
+                            <Button variant="outlined" size="small" startIcon={<EditIcon />} disabled={isDisabled} onClick={updateClick} >修改</Button>
+                            &nbsp;
+                            <Button variant="outlined" size="small" startIcon={<DeleteIcon />} disabled={isDisabled} onClick={deleteClick} >刪除</Button>
+                        </React.Fragment>
                     }
                 </TableCell>
                 {(isDeleting)
                     ?
                     <React.Fragment>
                         <TableCell colSpan={5}>
-                            是否刪除 編號: {data.id}, 客戶名稱: {data.payee}, 日期: {data.date}?
+                            是否刪除 <b>編號: {data.id}, 客戶名稱: {data.payee}, 日期: {data.date}</b>?
                         </TableCell>
                     </React.Fragment>
                     :
@@ -215,7 +225,7 @@ export function ReceiptRow(props) {
                             }
                         </TableCell>
                         <TableCell>
-                            {!isEditing && <button disabled={isDisabled} onClick={() => { setShowDetail(!showDetail); }} >Detail</button>}
+                            {!isEditing && <Button variant="outlined" size="small" startIcon={<FormatListBulletedIcon />} disabled={isDisabled} onClick={() => { setShowDetail(!showDetail); }} >詳細項目</Button>}
                         </TableCell>
                     </React.Fragment>
                 }
@@ -251,17 +261,17 @@ export function ReceiptRow(props) {
                         <TableCell>=</TableCell>
                         <TableCell>{getTotal(item)}</TableCell>
                         <TableCell>
-                            {isEditing && (<button onClick={() => { itemActionClick(ItemActionType.Delete, index); }}>移除</button>)}
+                            {isEditing && (<Button variant="outlined" size="small" startIcon={<HighlightOffIcon />} onClick={() => { itemActionClick(ItemActionType.Delete, index); }} >移除</Button>)}
                         </TableCell>
                     </TableRow>
                 ))
             }
-            <TableRow>
-                <TableCell colSpan={3}></TableCell>
-                <TableCell align="right">合計:</TableCell>
-                <TableCell></TableCell>
-                <TableCell>{getTotalSum(data.items)}</TableCell>
-                <TableCell></TableCell>
+            <TableRow style={{ border: "0px" }}>
+                <TableCell style={{ border: "0px" }} colSpan={3}></TableCell>
+                <TableCell style={{ border: "0px" }} align="right">合計:</TableCell>
+                <TableCell style={{ border: "0px" }}></TableCell>
+                <TableCell style={{ border: "0px" }}>{getTotalSum(data.items)}</TableCell>
+                <TableCell style={{ border: "0px" }}></TableCell>
             </TableRow>
         </React.Fragment>;
     }
@@ -280,12 +290,12 @@ export function ReceiptRow(props) {
                                     <TableRow>
                                         <TableCell>名稱</TableCell>
                                         <TableCell style={{ width: "15%" }}>單價</TableCell>
-                                        <TableCell style={{ width: "10px" }}></TableCell>
+                                        <TableCell></TableCell>
                                         <TableCell style={{ width: "15%" }}>數量</TableCell>
-                                        <TableCell style={{ width: "10px" }}></TableCell>
+                                        <TableCell></TableCell>
                                         <TableCell style={{ width: "10%" }}>總價</TableCell>
-                                        <TableCell style={{ width: "120px" }}>
-                                            {getEditable() && (<button onClick={() => { itemActionClick(ItemActionType.Add); }}>新增項目</button>)}
+                                        <TableCell>
+                                            {getEditable() && (<Button variant="outlined" size="small" startIcon={<AddCircleOutlineIcon />} onClick={() => { itemActionClick(ItemActionType.Add); }} >新增項目</Button>)}
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>

@@ -12,21 +12,24 @@ import * as Methods from './Methods'
 import './custom.css'
 
 
-const useStyles1 = makeStyles({
-    head: {
-        fontWeight: 600,
-    },
-}, { name: 'MuiTableCell' });
-
-const useStyles2 = makeStyles({
-    root: {
-        backgroundColor: Methods.getMainBgcolor(),
-    },
-}, { name: 'MuiTableHead' });
-
 export default function App() {
-    useStyles1();
-    useStyles2();
+    makeStyles({
+        head: {
+            fontWeight: 600,
+        },
+    }, { name: 'MuiTableCell' })();
+
+    makeStyles({
+        root: {
+            backgroundColor: Methods.getMainBgcolor(),
+        },
+    }, { name: 'MuiTableHead' })();
+
+    makeStyles({
+        root: {
+            whiteSpace: "nowrap",
+        },
+    }, { name: 'MuiButton' })();
 
     return (
         <Layout>
