@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using product_and_receipt.Models;
-using System.Threading;
 
 namespace product_and_receipt
 {
@@ -16,10 +15,7 @@ namespace product_and_receipt
             Configuration = configuration;
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            new Thread(() =>
-            {
-                GlobalInstance.InitializeInNewThread(connectionString);
-            }).Start();
+            GlobalInstance.Initialize(connectionString);
         }
 
         public IConfiguration Configuration { get; }

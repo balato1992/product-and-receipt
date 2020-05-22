@@ -7,10 +7,8 @@ namespace product_and_receipt.Models
     {
         internal static DBHelper DB { get; private set; }
 
-        internal static InitializingStatus Status { get; set; } = InitializingStatus.Initializing;
-        internal static bool InitializeInNewThread(string connectionString)
+        internal static void Initialize(string connectionString)
         {
-            Status = InitializingStatus.Initializing;
             try
             {
                 DB = new DBHelper(connectionString, (Exception ex, string msgPrefix) =>
@@ -22,13 +20,7 @@ namespace product_and_receipt.Models
             catch (Exception ex)
             {
                 DB.AppLogTable.InsertException("Initialize DB", ex);
-                Status = InitializingStatus.DBFailed;
-                return false;
             }
-
-            Status = InitializingStatus.Done;
-            return true;
         }
     }
-    public enum InitializingStatus { Initializing, Done, Failed, DBFailed }
 }
