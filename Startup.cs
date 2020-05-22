@@ -15,7 +15,11 @@ namespace product_and_receipt
         {
             Configuration = configuration;
 
-            new Thread(() => { GlobalInstance.InitializeInNewThread(); }).Start();
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            new Thread(() =>
+            {
+                GlobalInstance.InitializeInNewThread(connectionString);
+            }).Start();
         }
 
         public IConfiguration Configuration { get; }
