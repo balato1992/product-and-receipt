@@ -158,7 +158,7 @@ export function ReceiptRow(props) {
         return sum;
     }
 
-    function getView_HeaderRow() {
+    function getView_Row() {
         let isEditing = getEditable();
         let isDeleting = checkRowType(ReceiptRowTypeForView.Delete);
         let isDisabled = checkRowType(ReceiptRowTypeForView.Disabled);
@@ -194,24 +194,24 @@ export function ReceiptRow(props) {
                         <TableCell>
                             {isEditing
                                 ? <TextField name="id" defaultValue={data.id} onChange={(e) => { handleChange(e); }} />
-                                : <InputBase defaultValue={data.id} disabled className="color-black" />
+                                : <InputBase value={data.id} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
                             {isEditing
                                 ? <TextField name="payee" defaultValue={data.payee} onChange={(e) => { handleChange(e); }} />
-                                : <InputBase defaultValue={data.payee} disabled className="color-black" />
+                                : <InputBase value={data.payee} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
                             {isEditing
                                 ? <TextField name="date" type="datetime-local" defaultValue={data.date} onChange={(e) => { handleChange(e); }} />
-                                : <InputBase type="datetime-local" defaultValue={data.date} disabled className="color-black" />
+                                : <InputBase type="datetime-local" value={data.date} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
                             {!isEditing && !getCompleteShowDetail() &&
-                                <InputBase defaultValue={"合計: " + getTotalSum(data.items)} disabled className="color-black" />
+                                <InputBase value={"合計: " + getTotalSum(data.items)} disabled className="color-black" />
                             }
                         </TableCell>
                         <TableCell>
@@ -268,7 +268,7 @@ export function ReceiptRow(props) {
 
     return (
         <React.Fragment>
-            {getView_HeaderRow()}
+            {getView_Row()}
             {getCompleteShowDetail() &&
                 <TableRow>
                     <TableCell>
