@@ -14,7 +14,6 @@ namespace product_and_receipt.Models
 
         protected SqlHelper(string connectionString, LogFunc log = null)
         {
-            // "Data Source=127.0.0.1;Initial Catalog=TEST_DB;User Id=Test;Password=123456;"
             _ConnectionString = connectionString;
 
             _Log = log;

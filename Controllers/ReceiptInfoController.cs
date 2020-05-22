@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using product_and_receipt.Models;
 using product_and_receipt.Models.DBs.Structures;
-using System;
 using System.Collections.Generic;
 
 namespace product_and_receipt.Controllers
