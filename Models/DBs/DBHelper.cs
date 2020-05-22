@@ -6,11 +6,13 @@ namespace product_and_receipt.Models.DBs
 {
     public class DBHelper : SqlHelper
     {
+        private AppLogTable _AppLogTable { get; set; }
         private CompanyTable _CompanyTable { get; set; }
         private MaterialTable _MaterialTable { get; set; }
         private ReceiptTable _ReceiptTable { get; set; }
         private RecordTable _RecordTable { get; set; }
 
+        public AppLogTable AppLogTable => _AppLogTable;
         public CompanyTable CompanyTable => _CompanyTable;
         public MaterialTable MaterialTable => _MaterialTable;
         public ReceiptTable ReceiptTable => _ReceiptTable;
@@ -18,6 +20,7 @@ namespace product_and_receipt.Models.DBs
 
         public DBHelper(string connectionString, LogFunc log = null) : base(connectionString, log)
         {
+            _AppLogTable = new AppLogTable(connectionString, log);
             _CompanyTable = new CompanyTable(connectionString, log);
             _MaterialTable = new MaterialTable(connectionString, log);
             _ReceiptTable = new ReceiptTable(connectionString, log);
