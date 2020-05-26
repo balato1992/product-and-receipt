@@ -85,7 +85,7 @@ export function CusTableRow(props) {
                         {columns.map((item, index) => (
                             <TableCell key={getColumnKey(item)}>
                                 {isEditing
-                                    ? <TextField fullWidth name={item.field} defaultValue={data[item.field]} onChange={handleChange} inputProps={{size: 6}} />
+                                    ? <TextField fullWidth name={item.field} defaultValue={data[item.field]} onChange={handleChange} />
                                     : <React.Fragment>{data[item.field]}</React.Fragment>
                                 }
                             </TableCell>

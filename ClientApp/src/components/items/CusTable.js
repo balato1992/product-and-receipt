@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import ButtonBase from '@material-ui/core/ButtonBase';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,9 +12,20 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
+import Icon from '@material-ui/core/Icon';
+
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { CusTableRow, SelectedRowMode, RowDisplayType, getColumnKey } from './CusTableRow';
+import * as Methods from '../../Methods';
+
+
+export const SortOrder = {
+    None: 0,
+    Asc: 1,
+    Desc: 2
+}
 
 export function CusTable(props) {
     let columns = props.columns;
@@ -29,16 +43,67 @@ export function CusTable(props) {
 
     const [tableData, setTableData] = useState([]);
     const [selectedRowAndMode, setSelectedRowAndMode] = useState(undefined);
+    const [searchText, setSearchText] = useState("");
+    const [filteredData, setFilteredData] = useState([]);
 
     const [addRowItem, setAddRowItem] = useState(getNewData());
     const [showAddItem, setShowAddItem] = useState(false);
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [sortedFieldAndOrder, setSortedFieldAndOrder] = React.useState(undefined);
 
     useEffect(() => {
         getData();
     }, []);
+    useEffect(() => {
+
+        let data = Methods.jsonCopyObject(tableData);
+
+        if (searchText && searchText != "") {
+
+            data = data.filter((item) => {
+
+                for (let column of columns) {
+                    let value = item[column.field].toLowerCase();
+
+                    if (value.indexOf(searchText.toLowerCase()) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if (sortedFieldAndOrder && sortedFieldAndOrder.order !== SortOrder.None) {
+            data.sort(function (a, b) {
+                let field = sortedFieldAndOrder.field;
+
+                let v1 = String(a[field]);
+                let v2 = String(b[field]);
+
+                if (sortedFieldAndOrder.order == SortOrder.Desc) {
+                     v1 = String(b[field]);
+                     v2 = String(a[field]);
+                }
+
+                if (v1 < v2) {
+                    return -1;
+                }
+                else if (v2 > v1) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            });
+        }
+
+        cancelRowAdding();
+        setFilteredData(data);
+        resetPage(data.length);
+
+    }, [tableData, searchText, sortedFieldAndOrder]);
 
     function getAction() {
         return (data, doneFunc) => {
@@ -107,9 +172,28 @@ export function CusTable(props) {
 
         return currentType;
     }
+    function cancelRowAdding() {
 
-    function getFilteredRows() {
-        let dataCount = tableData.length;
+        onRowSelected();
+        setShowAddItem(false);
+    }
+    function resetPage(length) {
+
+        let firstIndex = page * rowsPerPage;
+        let maxIndex = Math.max(length - 1, 0);
+
+        if (firstIndex >= maxIndex) {
+
+            let newPage = Math.floor(maxIndex / rowsPerPage);
+            console.log("set");
+            console.log(newPage);
+
+            setPage(newPage);
+        }
+    }
+
+    function getViewRows() {
+        let dataCount = filteredData.length;
 
         let firstIndex = page * rowsPerPage;
         let lastIndex = firstIndex + rowsPerPage;
@@ -118,7 +202,7 @@ export function CusTable(props) {
         for (let i = firstIndex; i < lastIndex; i++) {
 
             if (i < dataCount) {
-                let item = tableData[i];
+                let item = filteredData[i];
 
                 list.push(
                     <CusTableRow
@@ -147,10 +231,9 @@ export function CusTable(props) {
             let receipt = getNewData();
             setAddRowItem(receipt);
             onRowSelected(receipt, SelectedRowMode.AddMode);
-            setShowAddItem(!showAddItem);
+            setShowAddItem(true);
         } else {
-            onRowSelected();
-            setShowAddItem(!showAddItem);
+            cancelRowAdding();
         }
     }
     const onRowSelected = (rowData, mode) => {
@@ -167,6 +250,30 @@ export function CusTable(props) {
             setSelectedRowAndMode(undefined);
         }
     }
+    const searchTextChanged = (e) => {
+
+        setSearchText(e.target.value);
+    };
+    const headerClick = (field) => {
+
+        let newOrder = SortOrder.Asc;
+
+        if (sortedFieldAndOrder !== undefined
+            && sortedFieldAndOrder.field == field) {
+
+            if (sortedFieldAndOrder.order == SortOrder.Asc) {
+                newOrder = SortOrder.Desc;
+            }
+            else if (sortedFieldAndOrder.order == SortOrder.Desc) {
+                newOrder = SortOrder.None;
+            }
+        }
+
+        setSortedFieldAndOrder({
+            field: field,
+            order: newOrder
+        });
+    };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -177,41 +284,77 @@ export function CusTable(props) {
     };
 
     return (
-        <TableContainer component={Paper}>
-            <Table size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{ width: '190px' }}>
-                            <Button variant="outlined" size="small" startIcon={<AddBoxIcon />} onClick={addClick} >新增</Button>
-                        </TableCell>
-                        {columns.map((item) => (
-                            <TableCell key={getColumnKey(item)}>{item.title}</TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {showAddItem &&
-                        <CusTableRow
-                            columns={columns}
-                            displayType={getRowType(addRowItem)}
-                            inputData={addRowItem}
-                            confirmAction={getAction()}
-                            onRowSelected={onRowSelected}
-                            onActionDone={() => { setShowAddItem(false); }}></CusTableRow>
-                    }
-                    {getFilteredRows()}
-                    <TableRow>
-                        <TablePagination
-                            count={tableData.length}
-                            page={page}
-                            onChangePage={handleChangePage}
-                            rowsPerPage={rowsPerPage}
-                            onChangeRowsPerPage={handleChangeRowsPerPage}
-                            rowsPerPageOptions={[5, 10, 15, 25, 50, 100]}
-                        />
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <Paper>
+            <TableContainer>
+                <Table size="small">
+                    <TableBody>
+                        <TableRow>
+                            <TableCell style={{ width: '100px' }}>
+                                <Button variant="outlined" size="small" startIcon={<AddBoxIcon />} onClick={addClick} >新增</Button>
+                            </TableCell>
+                            <TableCell style={{ width: '260px' }}>
+                                <TextField fullWidth placeholder="搜尋" onChange={searchTextChanged}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }} />
+                            </TableCell>
+                            <TableCell>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <TableContainer>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ width: '190px' }}>
+                            </TableCell>
+                            {columns.map((item) => (
+                                <TableCell key={getColumnKey(item)}>
+                                    <ButtonBase onClick={() => { headerClick(item.field); }}>
+                                        <b>{item.title}</b>
+                                        {(sortedFieldAndOrder !== undefined
+                                            && sortedFieldAndOrder.field == item.field
+                                            && sortedFieldAndOrder.order !== SortOrder.None)
+                                            ? ((sortedFieldAndOrder.order == SortOrder.Asc)
+                                                ? <Icon>arrow_upward</Icon>
+                                                : <Icon>arrow_downward</Icon>)
+                                            : null}
+                                    </ButtonBase>
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {showAddItem &&
+                            <CusTableRow
+                                columns={columns}
+                                displayType={getRowType(addRowItem)}
+                                inputData={addRowItem}
+                                confirmAction={getAction()}
+                                onRowSelected={onRowSelected}
+                                onActionDone={() => { cancelRowAdding(); }}></CusTableRow>
+                        }
+                        {getViewRows()}
+                        <TableRow>
+                            <TablePagination
+                                count={filteredData.length}
+                                page={page}
+                                onChangePage={handleChangePage}
+                                rowsPerPage={rowsPerPage}
+                                onChangeRowsPerPage={handleChangeRowsPerPage}
+                                rowsPerPageOptions={[5, 10, 15, 25, 50, 100]}
+                            />
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Paper>
     );
 }
