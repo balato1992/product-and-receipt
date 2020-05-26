@@ -4,6 +4,9 @@
 export function getMainBgcolor() {
     return "#e0f7fa";
 }
+export function getBgcolor() {
+    return "#eeeeee";
+}
 
 export function jsonCopyObject(obj) {
     return JSON.parse(JSON.stringify(obj));

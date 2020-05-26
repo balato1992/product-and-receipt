@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import FormGroup from '@material-ui/core/FormGroup';
 
 import { CusTable } from '../items/CusTable';
@@ -44,14 +44,9 @@ export function CompanyPage() {
     };
 
     return (
-        <div>
-            <FormGroup row>
-                <h2 style={{ paddingRight: "24px" }}>
-                    公司
-                </h2>
-            </FormGroup>
-
+        <React.Fragment>
+            <h2>公司</h2>
             <CusTable columns={columns} getDataCallback={getDataCallback} editActions={editActions} ></CusTable>
-        </div>
+        </React.Fragment>
     );
 }

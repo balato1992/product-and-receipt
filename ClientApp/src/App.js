@@ -31,6 +31,14 @@ export default function App() {
         },
     }, { name: 'MuiButton' })();
 
+    makeStyles({
+        root: {
+            '&:nth-of-type(even):not(:last-child)': {
+                backgroundColor: Methods.getBgcolor(),
+            },
+        },
+    }, { name: 'MuiTableRow' })();
+
     return (
         <Layout>
             <Route exact path='/' component={Home} />

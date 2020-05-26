@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -50,7 +50,7 @@ export function CusTableRow(props) {
 
         return (
             <TableRow style={{ opacity: isDisabled ? 0.4 : 1 }}>
-                <TableCell style={{ width: '180px' }}>
+                <TableCell>
                     {isEditing || isDeleting
                         ?
                         <React.Fragment>

@@ -8,9 +8,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TablePagination from '@material-ui/core/TablePagination';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 
-import * as Methods from '../../Methods'
 import { CusTableRow, SelectedRowMode, RowDisplayType, getColumnKey } from './CusTableRow';
 
 export function CusTable(props) {
@@ -33,6 +33,8 @@ export function CusTable(props) {
     const [addRowItem, setAddRowItem] = useState(getNewData());
     const [showAddItem, setShowAddItem] = useState(false);
 
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
     useEffect(() => {
         getData();
@@ -106,17 +108,52 @@ export function CusTable(props) {
         return currentType;
     }
 
-    function addClick() {
+    function getFilteredRows() {
+        let dataCount = tableData.length;
+
+        let firstIndex = page * rowsPerPage;
+        let lastIndex = firstIndex + rowsPerPage;
+
+        let list = [];
+        for (let i = firstIndex; i < lastIndex; i++) {
+
+            if (i < dataCount) {
+                let item = tableData[i];
+
+                list.push(
+                    <CusTableRow
+                        key={item.uid}
+                        columns={columns}
+                        displayType={getRowType(item)}
+                        inputData={item}
+                        confirmAction={getAction()}
+                        onRowSelected={onRowSelected} />);
+            } else {
+                list.push(
+                    <TableRow key={"l_" + i} style={{ visibility: "hidden" }}>
+                        <TableCell>
+                            <Button size="small">-</Button>
+                        </TableCell>
+                    </TableRow>);
+            }
+        }
+
+        return <React.Fragment>{list}</React.Fragment>;
+    }
+
+    const addClick = () => {
 
         if (!showAddItem) {
             let receipt = getNewData();
             setAddRowItem(receipt);
             onRowSelected(receipt, SelectedRowMode.AddMode);
+            setShowAddItem(!showAddItem);
+        } else {
+            onRowSelected();
+            setShowAddItem(!showAddItem);
         }
-
-        setShowAddItem(!showAddItem);
     }
-    function onRowSelected(rowData, mode) {
+    const onRowSelected = (rowData, mode) => {
 
         if (rowData !== undefined
             && mode !== undefined
@@ -131,13 +168,20 @@ export function CusTable(props) {
         }
     }
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     return (
         <TableContainer component={Paper}>
-            <Table>
+            <Table size="small">
                 <TableHead>
                     <TableRow>
-                        <TableCell>
+                        <TableCell style={{ width: '190px' }}>
                             <Button variant="outlined" size="small" startIcon={<AddBoxIcon />} onClick={addClick} >新增</Button>
                         </TableCell>
                         {columns.map((item) => (
@@ -155,15 +199,17 @@ export function CusTable(props) {
                             onRowSelected={onRowSelected}
                             onActionDone={() => { setShowAddItem(false); }}></CusTableRow>
                     }
-                    {tableData.map((item) => (
-                        <CusTableRow
-                            key={item.uid}
-                            columns={columns}
-                            displayType={getRowType(item)}
-                            inputData={item}
-                            confirmAction={getAction()}
-                            onRowSelected={onRowSelected}></CusTableRow>
-                    ))}
+                    {getFilteredRows()}
+                    <TableRow>
+                        <TablePagination
+                            count={tableData.length}
+                            page={page}
+                            onChangePage={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[5, 10, 15, 25, 50, 100]}
+                        />
+                    </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>
