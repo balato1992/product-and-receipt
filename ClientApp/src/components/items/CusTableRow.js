@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import EditIcon from '@material-ui/icons/Edit';
@@ -41,6 +43,33 @@ export function CusTableRow(props) {
 
     const [changedData, setChangedData] = useState(Methods.jsonCopyObject(props.inputData));
 
+    function getView_TextField(isEditing, column, datum) {
+
+        if (!isEditing) {
+            switch (column.type) {
+                case 'select':
+                    return <React.Fragment>{column.selectList[datum[column.field]]}</React.Fragment>;
+                default:
+                    return <React.Fragment>{datum[column.field]}</React.Fragment>;
+            }
+        }
+        else {
+            switch (column.type) {
+                case 'numeric':
+                    return <TextField fullWidth name={column.field} type="number" defaultValue={datum[column.field]} onChange={handleChange} />;
+                case 'select':
+                    return <Select name={column.field} value={datum[column.field]} onChange={handleChange} >
+                        {Object.keys(column.selectList).map(function (key) {
+                            let name = column.selectList[key];
+
+                            return <MenuItem key={key} value={key}>{name}</MenuItem>;
+                        })}
+                    </Select>;
+                default:
+                    return <TextField fullWidth name={column.field} defaultValue={datum[column.field]} onChange={handleChange} />;
+            }
+        }
+    }
     function getView_Row() {
         let isEditing = displayType == RowDisplayType.Add || displayType == RowDisplayType.Modify;
         let isDeleting = displayType == RowDisplayType.Delete;
@@ -82,12 +111,9 @@ export function CusTableRow(props) {
                     </React.Fragment>
                     :
                     <React.Fragment>
-                        {columns.map((item, index) => (
-                            <TableCell key={getColumnKey(item)}>
-                                {isEditing
-                                    ? <TextField fullWidth name={item.field} defaultValue={data[item.field]} onChange={handleChange} />
-                                    : <React.Fragment>{data[item.field]}</React.Fragment>
-                                }
+                        {columns.map((column, index) => (
+                            <TableCell key={getColumnKey(column)}>
+                                {getView_TextField(isEditing, column, data)}
                             </TableCell>
                         ))}
                     </React.Fragment>

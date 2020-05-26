@@ -62,10 +62,20 @@ export function CusTable(props) {
 
         if (searchText && searchText != "") {
 
-            data = data.filter((item) => {
+            data = data.filter((datum) => {
 
                 for (let column of columns) {
-                    let value = item[column.field].toLowerCase();
+                    let value = datum[column.field];
+
+                    switch (column.type) {
+                        case 'select':
+                            value = column.selectList[datum[column.field]];
+                            break;
+                        default:
+                            break;
+                    }
+
+                    value = String(value).toLowerCase();
 
                     if (value.indexOf(searchText.toLowerCase()) !== -1) {
                         return true;
@@ -185,8 +195,6 @@ export function CusTable(props) {
         if (firstIndex >= maxIndex) {
 
             let newPage = Math.floor(maxIndex / rowsPerPage);
-            console.log("set");
-            console.log(newPage);
 
             setPage(newPage);
         }
