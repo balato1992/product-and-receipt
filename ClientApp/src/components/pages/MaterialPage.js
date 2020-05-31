@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
 
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-
-import { CusMetarialTable } from '../items/CusMetarialTable';
 import { CusTable } from '../items/CusTable';
 import * as Methods from '../../Methods'
 
@@ -32,7 +27,7 @@ export function MaterialPage() {
                 }
                 setColumns([
                     { title: '公司', field: 'companyUid', type: 'select', selectList: obj, initialEditValue: firstItem.uid, emptyValue: firstItem.uid },
-                    { title: '名稱', field: 'name', initialEditValue: '-1', emptyValue: '' },
+                    { title: '名稱', field: 'name', initialEditValue: '-', emptyValue: '' },
                     { title: '規格1', field: 'spec1', initialEditValue: '-', emptyValue: '' },
                     { title: '規格2', field: 'spec2', initialEditValue: '-', emptyValue: '' },
                     { title: '類型', field: 'type', initialEditValue: '-', emptyValue: '' },

@@ -4,10 +4,10 @@
 
 
 TO-DO:
+    license
+    欄位防呆
+
     table
-        search
-        sort
-        page
         merge detail 
     implement recipe page
         日期欄位
@@ -19,5 +19,6 @@ TO-DO:
     
     起始頁面讀取(淡入)
 
+    loading
     錯誤訊息包裝
     錯誤訊息: 重複鍵值 (公司名稱)

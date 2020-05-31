@@ -1,16 +1,37 @@
 /*
  Navicat Premium Data Transfer
 
+ Source Server         : 127.0.0.1
  Source Server Type    : SQL Server
  Source Server Version : 14001000
+ Source Host           : 127.0.0.1:1433
+ Source Catalog        : TEST_PRODUCT
  Source Schema         : dbo
 
  Target Server Type    : SQL Server
  Target Server Version : 14001000
  File Encoding         : 65001
 
- Date: 16/05/2020 15:38:54
+ Date: 31/05/2020 08:01:20
 */
+
+
+-- ----------------------------
+-- Table structure for APP_LOG
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[APP_LOG]') AND type IN ('U'))
+	DROP TABLE [dbo].[APP_LOG]
+GO
+
+CREATE TABLE [dbo].[APP_LOG] (
+  [UID] int  IDENTITY(1,1) NOT NULL,
+  [TIME] datetime2(7)  NULL,
+  [MSG] varchar(max) COLLATE Chinese_Taiwan_Stroke_CI_AS  NULL
+)
+GO
+
+ALTER TABLE [dbo].[APP_LOG] SET (LOCK_ESCALATION = TABLE)
+GO
 
 
 -- ----------------------------
