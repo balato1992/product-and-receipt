@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import { CusTable } from '../items/CusTable';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
@@ -29,21 +30,6 @@ export function ReceiptPage() {
         getData();
     }, []);
 
-    /*
-        public class ReceiptDatumWithUid
-            public int Uid { get; set; }
-        public class ReceiptDatum
-            public string Id { get; set; }
-            public string Payee { get; set; }
-            public DateTime Date { get; set; }
-            public List<ReceiptItemDatum> Items { get; set; }
-    
-        public class ReceiptItemDatum
-            public string ProductName { get; set; }
-            public decimal Price { get; set; }
-            public decimal Number { get; set; }
-    
-     */
     function getData() {
 
         fetch(baseUrl)
@@ -136,8 +122,77 @@ export function ReceiptPage() {
         }
     }
 
+
+
+/*
+    public class ReceiptDatumWithUid
+        public int Uid { get; set; }
+    public class ReceiptDatum
+        public string Id { get; set; }
+        public string Payee { get; set; }
+        public DateTime Date { get; set; }
+        public List<ReceiptItemDatum> Items { get; set; }
+
+    public class ReceiptItemDatum
+        public string ProductName { get; set; }
+        public decimal Price { get; set; }
+        public decimal Number { get; set; }
+
+ */
+    function getDate() {
+        let date = new Date();
+        date.setHours(date.getHours() + 8);
+
+        return date.toISOString().substr(0, 19);
+    }
+
+    let columns = [
+        { title: '編號', field: 'id', initialEditValue: '-', emptyValue: '' },
+        { title: '客戶名稱', field: 'payee', initialEditValue: '-', emptyValue: '' },
+        { title: '日期', field: 'date', type: 'date', initialEditValue: getDate, emptyValue: '' },
+        //{ title: '合計', field: 'items', type: 'select' },
+    ];
+    let getDataCallback = (callback) => {
+
+        let url = baseUrl;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(result => {
+
+                for (let datum of result) {
+
+                    datum.uidForView = Methods.cusGetUidForView();
+
+                    for (let item of datum.items) {
+                        item.uidForView = Methods.cusGetUidForView();
+                    }
+                }
+                callback(result);
+            });
+    };
+    let editActions = {
+        post: (data, resolve, reject) => {
+
+            Methods.cusFetch(baseUrl, "post", data, resolve, reject);
+        },
+        patch: (data, resolve, reject) => {
+
+            Methods.cusFetch(baseUrl, "patch", data, resolve, reject);
+        },
+        delete: (data, resolve, reject) => {
+
+            Methods.cusFetch(baseUrl, "delete", data, resolve, reject);
+        },
+    };
+
     return (
         <div>
+            <CusTable columns={columns} getDataCallback={getDataCallback} editActions={editActions} usingReceiptDetail={true}></CusTable>
+            <br />
+            <br />
+            <br />
+            <br />
             <Button variant="outlined" startIcon={<AddBoxIcon />} style={{ margin: "8px" }} onClick={addClick} >新增收據紀錄</Button>
 
             <div style={{ maxWidth: '100%' }}>

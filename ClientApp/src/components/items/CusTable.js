@@ -28,9 +28,10 @@ export const SortOrder = {
 }
 
 export function CusTable(props) {
-    let columns = props.columns;
-    let getDataCallback = props.getDataCallback;
-    let editActions = props.editActions;
+    const columns = props.columns;
+    const getDataCallback = props.getDataCallback;
+    const editActions = props.editActions;
+    const usingReceiptDetail = props.usingReceiptDetail;
 
     let getData = () => {
         if (getDataCallback) {
@@ -93,8 +94,8 @@ export function CusTable(props) {
                 let v2 = String(b[field]);
 
                 if (sortedFieldAndOrder.order == SortOrder.Desc) {
-                     v1 = String(b[field]);
-                     v2 = String(a[field]);
+                    v1 = String(b[field]);
+                    v2 = String(a[field]);
                 }
 
                 if (v1 < v2) {
@@ -153,7 +154,15 @@ export function CusTable(props) {
         let obj = {};
 
         for (let column of columns) {
-            obj[column.field] = column.initialEditValue;
+
+            if (typeof column.initialEditValue === "function") {
+                obj[column.field] = column.initialEditValue();
+            } else {
+                obj[column.field] = column.initialEditValue;
+            }
+        }
+        if (usingReceiptDetail) {
+            obj.items = [];
         }
 
         return obj;
@@ -207,6 +216,7 @@ export function CusTable(props) {
         let lastIndex = firstIndex + rowsPerPage;
 
         let list = [];
+        let count = 0;
         for (let i = firstIndex; i < lastIndex; i++) {
 
             if (i < dataCount) {
@@ -214,6 +224,8 @@ export function CusTable(props) {
 
                 list.push(
                     <CusTableRow
+                        style={{ backgroundColor: (++count % 2 == 0) ? Methods.getBgcolor() : '' }}
+                        usingReceiptDetail={usingReceiptDetail}
                         key={item.uid}
                         columns={columns}
                         displayType={getRowType(item)}
@@ -337,11 +349,18 @@ export function CusTable(props) {
                                     </ButtonBase>
                                 </TableCell>
                             ))}
+                            {usingReceiptDetail &&
+                                <React.Fragment>
+                                    <TableCell>合計</TableCell>
+                                    <TableCell></TableCell>
+                                </React.Fragment>
+                            }
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {showAddItem &&
                             <CusTableRow
+                                usingReceiptDetail={usingReceiptDetail}
                                 columns={columns}
                                 displayType={getRowType(addRowItem)}
                                 inputData={addRowItem}

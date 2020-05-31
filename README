@@ -6,6 +6,7 @@
 TO-DO:
     license
     欄位防呆
+    處理 Can't perform a React state update on an unmounted component
 
     table
         merge detail 

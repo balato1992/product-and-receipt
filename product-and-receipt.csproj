@@ -8,6 +8,7 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <RootNamespace>product_and_receipt</RootNamespace>
+    <UserSecretsId>1c432642-83a9-4228-90a8-e0217db9ee9a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
