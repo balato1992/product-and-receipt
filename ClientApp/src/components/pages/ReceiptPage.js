@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { CusTable } from '../items/CusTable';
 import * as Methods from '../../Methods'
@@ -38,9 +38,8 @@ export function ReceiptPage() {
 
         let url = baseUrl;
 
-        fetch(url)
-            .then(response => response.json())
-            .then(result => {
+        Methods.cusFetchJson(url,
+            (result) => {
 
                 for (let datum of result) {
 
@@ -54,17 +53,17 @@ export function ReceiptPage() {
             });
     };
     let editActions = {
-        post: (data, resolve, reject) => {
+        post: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch(baseUrl, "post", data, resolve, reject);
+            Methods.cusFetch(baseUrl, "post", data, resolve, reject, alway);
         },
-        patch: (data, resolve, reject) => {
+        patch: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch(baseUrl, "patch", data, resolve, reject);
+            Methods.cusFetch(baseUrl, "patch", data, resolve, reject, alway);
         },
-        delete: (data, resolve, reject) => {
+        delete: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch(baseUrl, "delete", data, resolve, reject);
+            Methods.cusFetch(baseUrl, "delete", data, resolve, reject, alway);
         },
     };
 

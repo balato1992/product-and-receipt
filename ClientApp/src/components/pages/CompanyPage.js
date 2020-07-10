@@ -20,25 +20,23 @@ export function CompanyPage() {
         };
         let url = 'CompanyInfo?pageSize=' + query.pageSize + '&pageIndex=' + query.page + '&searchText=' + query.search;
 
-        fetch(url)
-            .then(response => response.json())
-            .then(result => {
-
+        Methods.cusFetchJson(url,
+            (result) => {
                 callback(result.data);
             });
     };
     let editActions = {
-        post: (data, resolve, reject) => {
+        post: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch("CompanyInfo", "post", data, resolve, reject);
+            Methods.cusFetch("CompanyInfo", "post", data, resolve, reject, alway);
         },
-        patch: (data, resolve, reject) => {
+        patch: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch("CompanyInfo", "patch", data, resolve, reject);
+            Methods.cusFetch("CompanyInfo", "patch", data, resolve, reject, alway);
         },
-        delete: (data, resolve, reject) => {
+        delete: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch("CompanyInfo", "delete", data, resolve, reject);
+            Methods.cusFetch("CompanyInfo", "delete", data, resolve, reject, alway);
         },
     };
 

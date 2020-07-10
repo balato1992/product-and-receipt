@@ -15,10 +15,8 @@ export function MaterialPage() {
             search: "",
         };
 
-        fetch('companyInfo?pageSize=999999&pageIndex=0&searchText=')
-            .then(response => response.json())
-            .then(result => {
-
+        Methods.cusFetchJson('companyInfo?pageSize=999999&pageIndex=0&searchText=',
+            result => {
                 let firstItem = result.data[0];
                 let obj = {};
                 for (let datum of result.data) {
@@ -35,26 +33,25 @@ export function MaterialPage() {
                     { title: '價格', field: 'price', type: 'numeric', initialEditValue: '0', emptyValue: '0' },
                 ]);
 
-                fetch(baseUrl + '?pageSize=' + query.pageSize + '&pageIndex=' + query.page + '&searchText=' + query.search)
-                    .then(response => response.json())
-                    .then(result => {
-
-                        callback(result.data);
+                let url = baseUrl + '?pageSize=' + query.pageSize + '&pageIndex=' + query.page + '&searchText=' + query.search;
+                Methods.cusFetchJson(url,
+                    (result2) => {
+                        callback(result2.data);
                     });
             });
     };
     let editActions = {
-        post: (data, resolve, reject) => {
+        post: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch(baseUrl, "post", data, resolve, reject);
+            Methods.cusFetch(baseUrl, "post", data, resolve, reject, alway);
         },
-        patch: (data, resolve, reject) => {
+        patch: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch(baseUrl, "patch", data, resolve, reject);
+            Methods.cusFetch(baseUrl, "patch", data, resolve, reject, alway);
         },
-        delete: (data, resolve, reject) => {
+        delete: (data, resolve, reject, alway) => {
 
-            Methods.cusFetch(baseUrl, "delete", data, resolve, reject);
+            Methods.cusFetch(baseUrl, "delete", data, resolve, reject, alway);
         },
     };
 

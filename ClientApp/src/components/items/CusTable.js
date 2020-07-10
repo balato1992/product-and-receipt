@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 
-import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
-import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Icon from '@material-ui/core/Icon';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,7 +15,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
-import Icon from '@material-ui/core/Icon';
+import TextField from '@material-ui/core/TextField';
 
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import SearchIcon from '@material-ui/icons/Search';
@@ -27,7 +30,16 @@ export const SortOrder = {
     Desc: 2
 }
 
+const useStyles = makeStyles((theme) => ({
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
+}));
+
 export function CusTable(props) {
+    const classes = useStyles();
+
     const columns = props.columns;
     const getDataCallback = props.getDataCallback;
     const editActions = props.editActions;
@@ -35,8 +47,10 @@ export function CusTable(props) {
 
     let getData = () => {
         if (getDataCallback) {
+            setOpenBackdrop(true);
             getDataCallback((data) => {
 
+                setOpenBackdrop(false);
                 setTableData(data);
             });
         }
@@ -53,6 +67,8 @@ export function CusTable(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [sortedFieldAndOrder, setSortedFieldAndOrder] = React.useState(undefined);
+
+    const [openBackdrop, setOpenBackdrop] = useState(false);
 
     useEffect(() => {
         getData();
@@ -124,8 +140,11 @@ export function CusTable(props) {
                 doneFunc();
                 getData();
             };
-            let reject = () => {
-                alert("上傳失敗");
+            let reject = (err) => {
+                alert("上傳失敗, 訊息:" + err);
+            };
+            let alway = () => {
+                setOpenBackdrop(false);
             };
 
 
@@ -136,12 +155,15 @@ export function CusTable(props) {
                 }
                 switch (selectedRowAndMode.mode) {
                     case SelectedRowMode.AddMode:
-                        return editActions.post(data, resolve, reject);
+                        setOpenBackdrop(true);
+                        return editActions.post(data, resolve, reject, alway);
                     case SelectedRowMode.ModifyMode:
-                        return editActions.patch(data, resolve, reject);
+                        setOpenBackdrop(true);
+                        return editActions.patch(data, resolve, reject, alway);
                     case SelectedRowMode.DeleteMode:
+                        setOpenBackdrop(true);
                         data = data.uid;
-                        return editActions.delete(data, resolve, reject);
+                        return editActions.delete(data, resolve, reject, alway);
                     default:
                         alert("發生錯誤 0013");
                         return () => { };
@@ -303,6 +325,7 @@ export function CusTable(props) {
         setPage(0);
     };
 
+
     return (
         <Paper>
             <TableContainer>
@@ -382,6 +405,10 @@ export function CusTable(props) {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Backdrop className={classes.backdrop} open={openBackdrop}>
+                <CircularProgress />
+            </Backdrop>
         </Paper>
     );
 }
