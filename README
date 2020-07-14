@@ -1,9 +1,30 @@
 ﻿DOT NET Core 3.1 + React
 
 
-
+安裝步驟 (Windows, IIS)
+    釋出專案
+        設定根路徑 package.json: homepage
+        設定 Publish:
+            Deployment mode: Framework-Dependent
+            Target runtime: 目標環境位元
+    Windows 環境設定
+        開啟 IIS (建議重新開機)
+        安裝 .Net Core 3.1 hosting bundle (有時發生 500.19 的錯誤，可能為順序不同產生，需要修復或重新安裝 hosting bundle)
+        安裝 database
+            SQL Server express
+            SSMS
+        
 
 TO-DO:
+    沒有設定公司會發生的錯誤
+
+    公司新增備註
+    提示歷史字串
+    字元提示收據項目
+    日期格式改為文字
+    可搜尋項目與價格
+    TABLE 特殊格式優化
+
     license
     欄位防呆
     處理 Can't perform a React state update on an unmounted component
