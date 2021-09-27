@@ -25,23 +25,32 @@ namespace product_and_receipt.Controllers
         }
 
         [HttpPost]
-        public bool Post([FromBody]string value)
+        public bool Post([FromBody] string value)
         {
-            if (value == "1111")
+            switch (value)
             {
-                GlobalInstance.DB.RecordTable.Insert("Update DB Version", null);
+                case "1111":
+                    GlobalInstance.DB.RecordTable.Insert("Update DB Version", null);
 
-                string info = GlobalInstance.DB.UpdateDBVersion();
-                GlobalInstance.DB.RecordTable.Insert("Update DB Version Done", info);
+                    string info = GlobalInstance.DB.UpdateDBVersion();
+                    GlobalInstance.DB.RecordTable.Insert("Update DB Version Done", info);
 
-                return true;
-            }
-            if (value == "1122")
-            {
-                GlobalInstance.DB.DBInfoTable.Backup(GlobalInstance.ContentRoot);
-                GlobalInstance.DB.RecordTable.Insert("Backup DB Done", null);
+                    return true;
+                case "1122":
+                    GlobalInstance.DB.DBInfoTable.Backup(GlobalInstance.ContentRoot);
+                    GlobalInstance.DB.RecordTable.Insert("Backup DB Done", null);
 
-                return true;
+                    return true;
+                case "2159":
+                    GlobalInstance.DB.DBInfoTable.Backup(GlobalInstance.ContentRoot);
+                    GlobalInstance.DB.RecordTable.Insert("Backup DB Done 2", null);
+
+                    return true;
+                case "2158":
+                    // test exception
+                    throw new System.Exception();
+                default:
+                    break;
             }
             return false;
         }
