@@ -15,6 +15,7 @@ namespace product_and_receipt.Models.DBs.Tables
         private static string FIELD_TYPE => "TYPE";
         private static string FIELD_UNIT => "UNIT";
         private static string FIELD_PRICE => "PRICE";
+        private static string FIELD_PIC_IMAGE => "PIC_IMAGE";
         private static string FIELD_COMPANY_UID => "COMPANY_UID";
         private static List<string> SEARCH_FIELDS => new List<string>()
         {
@@ -23,7 +24,8 @@ namespace product_and_receipt.Models.DBs.Tables
             FIELD_SPEC2,
             FIELD_TYPE,
             FIELD_UNIT,
-            FIELD_PRICE
+            FIELD_PRICE,
+            FIELD_PIC_IMAGE
         };
 
         public MaterialTable(string connectionString, LogFunc log = null) : base(connectionString, log)
@@ -98,21 +100,22 @@ namespace product_and_receipt.Models.DBs.Tables
             ConvertToString(reader[prefix + FIELD_TYPE], out string type);
             ConvertToString(reader[prefix + FIELD_UNIT], out string unit);
             ConvertToDecimal(reader[prefix + FIELD_PRICE], out decimal price);
+            ConvertToString(reader[prefix + FIELD_PIC_IMAGE], out string image);
             ConvertToInt(reader[prefix + FIELD_COMPANY_UID], out int companyUid);
 
-            return new MaterialDatumWithUid(uid, name, spec1, spec2, type, unit, price, companyUid);
+            return new MaterialDatumWithUid(uid, name, spec1, spec2, type, unit, price, image, companyUid);
         }
 
         public void Insert(MaterialDatum datum)
         {
-            DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_NAME}, {FIELD_SPEC1}, {FIELD_SPEC2}, {FIELD_TYPE}, {FIELD_UNIT}, {FIELD_PRICE}, {FIELD_COMPANY_UID}) "
-                + $" VALUES (?, ?, ?, ?, ?, ?, ?)",
-                datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid);
+            DoExecuteNonQuery($"INSERT INTO {TABLE} ({FIELD_NAME}, {FIELD_SPEC1}, {FIELD_SPEC2}, {FIELD_TYPE}, {FIELD_UNIT}, {FIELD_PRICE}, {FIELD_PIC_IMAGE}, {FIELD_COMPANY_UID}) "
+                + $" VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.Image, datum.CompanyUid);
         }
         public void Update(MaterialDatumWithUid datum)
         {
-            DoExecuteNonQuery($"UPDATE {TABLE} SET {FIELD_NAME}=?,{FIELD_SPEC1}=?,{FIELD_SPEC2}=?,{FIELD_TYPE}=?,{FIELD_UNIT}=?,{FIELD_PRICE}=?,{FIELD_COMPANY_UID}=? WHERE {FIELD_UID}=?",
-                datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.CompanyUid, datum.Uid);
+            DoExecuteNonQuery($"UPDATE {TABLE} SET {FIELD_NAME}=?,{FIELD_SPEC1}=?,{FIELD_SPEC2}=?,{FIELD_TYPE}=?,{FIELD_UNIT}=?,{FIELD_PRICE}=?,{FIELD_PIC_IMAGE}=?,{FIELD_COMPANY_UID}=? WHERE {FIELD_UID}=?",
+                datum.Name, datum.Spec1, datum.Spec2, datum.Type, datum.Unit, datum.Price, datum.Image, datum.CompanyUid, datum.Uid);
         }
         public void Delete(int uid)
         {

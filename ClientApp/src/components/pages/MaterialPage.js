@@ -64,6 +64,10 @@ export function MaterialPage() {
                             title: '價格', field: 'price', type: 'numeric',
                             initialEditValue: '0', emptyValue: '0'
                         },
+                        {
+                            title: '圖片', field: 'image', type: 'file',
+                            initialEditValue: '', emptyValue: ''
+                        },
                     ]);
                 }
             });

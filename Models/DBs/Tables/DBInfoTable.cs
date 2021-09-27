@@ -105,5 +105,5 @@ namespace product_and_receipt.Models.DBs.Tables
         }
     }
 
-    public enum DBVersion { v1, v2 }
+    public enum DBVersion { v1, v2, v3 }
 }

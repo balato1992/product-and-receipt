@@ -85,6 +85,8 @@ export function CusTableRow(props) {
                     return <React.Fragment>{column.selectList[datum[column.field]]}</React.Fragment>;
                 case 'numeric':
                     return <React.Fragment>{datum[column.field]}</React.Fragment>;
+                case 'file':
+                    return <img src={datum[column.field]} height="36" style={{ border: (datum[column.field]) ? "2px black dashed" : "" }} />;
                 default:
                     return splitStringToView(datum[column.field]);
             }
@@ -104,6 +106,9 @@ export function CusTableRow(props) {
                     </Select>;
                 case 'numeric':
                     return <TextField fullWidth name={column.field} type="number"
+                        defaultValue={datum[column.field]} onChange={handleChange} />;
+                case 'file':
+                    return <input name={column.field} type="file" accept=".bmp,.png"
                         defaultValue={datum[column.field]} onChange={handleChange} />;
                 default:
                     return <TextField fullWidth multiline name={column.field}
@@ -299,10 +304,30 @@ export function CusTableRow(props) {
         return displayType === RowDisplayType.Add || displayType === RowDisplayType.Modify;
     }
 
-    function handleChange(event) {
+    async function handleChange(event) {
         const target = event.target;
-        const value = target.value;
+        let value = target.value;
         const name = target.name;
+
+        if (target.files != null && target.files.length >= 0) {
+
+            let file = target.files[0];
+
+            const fileLoad = file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                })
+            }
+
+            const src = await fileLoad(file);
+
+            alert("檔案設定成功");
+
+            value = src;
+        }
 
         let newData = Methods.jsonCopyObject(changedData);
         newData[name] = value;

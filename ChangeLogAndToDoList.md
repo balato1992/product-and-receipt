@@ -43,6 +43,11 @@
 
 # Log
 
+2021/09/27
+
+1. Add manual backup and some settings
+2. Material page and DB add image field
+
 2020/08/29 v1.0.1
 
 1. fix bug that won't insert backup time

@@ -53,30 +53,35 @@ namespace product_and_receipt.Models.DBs
         {
             DBVersion version = DBInfoTable.GetVersion();
 
-
-            if (version == DBVersion.v1)
+            switch (version)
             {
-                string sql = $" CREATE TABLE {DBInfoTable.TABLE} ( "
-                    + $" {DBInfoTable.FIELD_NAME} varchar(100) COLLATE Chinese_Taiwan_Stroke_CI_AS NOT NULL, "
-                    + $" {DBInfoTable.FIELD_VALUE} varchar(255) COLLATE Chinese_Taiwan_Stroke_CI_AS NULL, "
-                    + $" CONSTRAINT DB_INFO_PK PRIMARY KEY({DBInfoTable.FIELD_NAME}) "
-                    + $" ); "
-                    + $" INSERT INTO {DBInfoTable.TABLE} ({DBInfoTable.FIELD_NAME}, {DBInfoTable.FIELD_VALUE}) VALUES ('VERSION', ?); "
-                    + $" ALTER TABLE {CompanyTable.TABLE} "
-                    + $" ADD {CompanyTable.FIELD_REMARK} varchar(255) COLLATE Chinese_Taiwan_Stroke_CI_AS NULL; "
+                case DBVersion.v1:
+                    string sql = $" CREATE TABLE {DBInfoTable.TABLE} ( "
+                        + $" {DBInfoTable.FIELD_NAME} varchar(100) COLLATE Chinese_Taiwan_Stroke_CI_AS NOT NULL, "
+                        + $" {DBInfoTable.FIELD_VALUE} varchar(255) COLLATE Chinese_Taiwan_Stroke_CI_AS NULL, "
+                        + $" CONSTRAINT DB_INFO_PK PRIMARY KEY({DBInfoTable.FIELD_NAME}) "
+                        + $" ); "
+                        + $" INSERT INTO {DBInfoTable.TABLE} ({DBInfoTable.FIELD_NAME}, {DBInfoTable.FIELD_VALUE}) VALUES ('VERSION', ?); "
+                        + $" ALTER TABLE {CompanyTable.TABLE} "
+                        + $" ADD {CompanyTable.FIELD_REMARK} varchar(255) COLLATE Chinese_Taiwan_Stroke_CI_AS NULL; "
 
-                    + $" EXEC sp_RENAME 'RECEIPT_INFO.DATE' , 'DATE_2', 'COLUMN'; "
-                    + $" ALTER TABLE RECEIPT_INFO ADD RECEIPT_DATE varchar(255) COLLATE Chinese_Taiwan_Stroke_CI_AS NULL; "
-                    + $" EXEC('UPDATE RECEIPT_INFO SET RECEIPT_DATE = convert(varchar, DATE_2, 111)'); "
-                    + $" ALTER TABLE RECEIPT_INFO DROP COLUMN DATE_2; ";
+                        + $" EXEC sp_RENAME 'RECEIPT_INFO.DATE' , 'DATE_2', 'COLUMN'; "
+                        + $" ALTER TABLE RECEIPT_INFO ADD RECEIPT_DATE varchar(255) COLLATE Chinese_Taiwan_Stroke_CI_AS NULL; "
+                        + $" EXEC('UPDATE RECEIPT_INFO SET RECEIPT_DATE = convert(varchar, DATE_2, 111)'); "
+                        + $" ALTER TABLE RECEIPT_INFO DROP COLUMN DATE_2; ";
 
-                DoExecuteNonQuery(sql, DBVersion.v2);
+                    DoExecuteNonQuery(sql, DBVersion.v2);
 
-                return DBVersion.v2.ToString();
-            }
-            else
-            {
-                return DBVersion.v1.ToString();
+                    return DBVersion.v2.ToString();
+                case DBVersion.v2:
+                    string sql2 = $"ALTER TABLE PRODUCT_INFO ADD PIC_IMAGE varchar(MAX) NULL;"
+                    + $"UPDATE [dbo].[DB_INFO] SET VALUE=? WHERE NAME='VERSION'";
+
+                    DoExecuteNonQuery(sql2, DBVersion.v3);
+
+                    return DBVersion.v3.ToString();
+                default:
+                    return DBVersion.v1.ToString();
             }
         }
 
