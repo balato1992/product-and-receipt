@@ -86,7 +86,7 @@ export function CusTableRow(props) {
                 case 'numeric':
                     return <React.Fragment>{datum[column.field]}</React.Fragment>;
                 case 'file':
-                    return <img src={datum[column.field]} height="36" style={{ border: (datum[column.field]) ? "2px black dashed" : "" }} />;
+                    return <img src={datum[column.field]} height="42" style={{ border: (datum[column.field]) ? "2px black dashed" : "" }} />;
                 default:
                     return splitStringToView(datum[column.field]);
             }
@@ -108,8 +108,10 @@ export function CusTableRow(props) {
                     return <TextField fullWidth name={column.field} type="number"
                         defaultValue={datum[column.field]} onChange={handleChange} />;
                 case 'file':
-                    return <input name={column.field} type="file" accept=".bmp,.png"
-                        defaultValue={datum[column.field]} onChange={handleChange} />;
+                    return <div>
+                        <img src={datum[column.field]} height="42" style={{ border: (datum[column.field]) ? "2px black dashed" : "" }} />
+                        <input name={column.field} type="file" accept=".bmp,.png" onChange={handleChange} />
+                    </div>;
                 default:
                     return <TextField fullWidth multiline name={column.field}
                         defaultValue={datum[column.field]} onChange={handleChange} />;
@@ -153,9 +155,9 @@ export function CusTableRow(props) {
                         <TableCell colSpan={columns.length}>
                             是否刪除
                             <b>
-                                {columns.map((item, index) => (
+                                {columns.filter(c => !c.hideWhenDeleting).map((item, index) => (
                                     <React.Fragment key={getColumnKey(item)}>
-                                        {index === 0 ? "" : ","}{item.title}: {data[item.field]}
+                                        {index === 0 ? "" : ", "}{item.title}: {data[item.field]}
                                     </React.Fragment>
                                 ))}
                             </b>?
@@ -323,9 +325,7 @@ export function CusTableRow(props) {
             }
 
             const src = await fileLoad(file);
-
-            alert("檔案設定成功");
-
+            //alert("檔案設定成功");
             value = src;
         }
 

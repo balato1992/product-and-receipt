@@ -66,7 +66,7 @@ export function MaterialPage() {
                         },
                         {
                             title: '圖片', field: 'image', type: 'file',
-                            initialEditValue: '', emptyValue: ''
+                            initialEditValue: null, emptyValue: null, hideWhenDeleting: true
                         },
                     ]);
                 }

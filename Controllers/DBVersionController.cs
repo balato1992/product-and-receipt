@@ -27,7 +27,8 @@ namespace product_and_receipt.Controllers
         [HttpPost]
         public bool Post([FromBody] string value)
         {
-            switch (value)
+            string[] strs = value.Split(',');
+            switch (strs[0])
             {
                 case "1111":
                     GlobalInstance.DB.RecordTable.Insert("Update DB Version", null);

@@ -43,6 +43,10 @@
 
 # Log
 
+2021/09/28
+
+1. Code refinement
+
 2021/09/27
 
 1. Add manual backup and some settings
