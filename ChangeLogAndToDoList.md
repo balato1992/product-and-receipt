@@ -14,6 +14,7 @@
 - [ ] 欄位防呆
 - [ ] 錯誤訊息包裝
 - [ ] 錯誤訊息: 重複鍵值 (公司名稱)
+- [ ] Import/export csv
 
 ## Table Component
 
